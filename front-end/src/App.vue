@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -24,12 +26,17 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
   user-select:  none !important;
+}
+body {
+  background: url('./assets/bg.jpg');
 }
 #app {
   height: 100%;
-  width: 100%;
+  width: 1000px;
+  margin: 0 auto;
+  border-radius: 5px;
 }
 a {
   text-decoration: none;
@@ -40,4 +47,11 @@ a {
   height: 0px;
   font-size: 0;
 }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s ease;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+
 </style>

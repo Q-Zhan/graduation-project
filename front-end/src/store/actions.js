@@ -1,38 +1,69 @@
 
-import { TEST, API } from '../constant'
+import { API, responceCode } from '../constant'
 import 'whatwg-fetch'
 
 export default {
-  // register({ commit, state }, { uname, nname, passwd, rpasswd }) {
-  //   commit('startLoading')
-  //   return fetch(api + '/api/user/create', {
-  //     method: 'post',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded'
-  //     },
-  //     body: 'uname=' + uname + '&' + 'nname=' + nname + '&' + 'passwd=' + passwd + '&' + 'rpasswd=' + rpasswd
-  //   })
-  //   .then((res) => res.json())
-  //   .then((data) => {
-  //     let message = ''
-  //     // 用户名重复
-  //     if (data.message.substring(0,4) == 'User') {
-  //       message = '账号名已被注册'
-  //     }
-  //     // 昵称重复
-  //     if (data.message.substring(0,4) == 'Nick') {
-  //       message = '昵称已被注册'
-  //     }
-  //     // 注册成功
-  //     if (data.message == '成功') {
-  //       message = '注册成功'
-  //     }
-  //     commit('stopLoading')
-  //     return message
-  //   })
-  //   .catch(err => {
-  //     console.log(err)
-  //     commit('stopLoading')
-  //   })
-  // }
+  register({ commit, state}, { account, password, mail}) {
+    return fetch(API + 'user/create', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `account=${account}&password=${password}&mail=${mail}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: responceCode.error};
+    })
+  },
+  verifyMail({ commit, state}, { account, mail}) {
+    return fetch(API + 'user/verifyMail', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `account=${account}&mail=${mail}`
+      // body: `account=${account}&mail=${mail}&jwt=${state.user.token}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: responceCode.error};
+    })
+  },
+  modifyPassword({ commit, state}, { account, password}) {
+    return fetch(API + 'user/modifyPassword', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `account=${account}&password=${password}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: responceCode.error};
+    })
+  },
+  login({ commit, state}, { account, password}) {
+    return fetch(API + 'user/login', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `account=${account}&password=${password}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.code == responceCode.success) {
+        commit('getToken', {token: data.token})
+      }
+      return data;
+    })
+    .catch(err => {
+      console.error(err)
+      return {code: responceCode.error};
+    })
+  },
 }

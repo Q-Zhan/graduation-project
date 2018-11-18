@@ -1,7 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { TEST } from './constant'
-import Home from './component/Home/Home.vue'
+
+
+import Home from './component/Home/index.vue'
+import Login from './component/Login/index.vue'
+import Forget from './component/Forget/index.vue'
+import Register from './component/Register/index.vue'
+import NotChoose from './component/NotChoose/index.vue'
 
 
 Vue.use(Router)
@@ -10,12 +15,28 @@ let router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/', redirect: '/Home'
+      path: '/', redirect: '/login'
     },
     {
-      path: '/Home',
-      component: Home
-    }
+      path: '/login',
+      component: Login
+    },
+    {
+      path: '/forget',
+      component: Forget
+    },
+    {
+      path: '/register',
+      component: Register
+    },
+    {
+      path: '/home',
+      component: Home,
+      children: [
+        { path: '/', component: NotChoose }
+      ]
+    },
+
   ]
 })
 

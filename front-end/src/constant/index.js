@@ -1,2 +1,8 @@
-export const TEST = '123';
-export const API = 'localhost:3030';
+
+export const API = 'http://localhost:8081/';
+export const responceCode = {
+  success: 0,
+  error: -1,
+  dbRepeat: -2,
+  unAuth: 401
+}
