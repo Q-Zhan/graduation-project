@@ -53,5 +53,9 @@ a {
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+img {
+  width: 100%;
+  height: 100%;
+}
 
 </style>
