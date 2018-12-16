@@ -1,16 +1,19 @@
 <template>
   <div id="home">
-    <div class="left">
-      <panel />
+    <div class="container">
+      <div class="left">
+        <panel />
+      </div>
+      <div class="right">
+        <router-view name="detail"></router-view>
+      </div>
     </div>
-    <div class="right">
-      <router-view></router-view>
-    </div>
+    
   </div>
 </template>
 
 <script>
-import Panel from '../Panel';
+import Panel from './component/Panel';
 
 export default {
   components: {
@@ -42,12 +45,20 @@ export default {
   display: flex;
   border-radius: 5px;
   overflow: hidden;
+  align-items: center;
+  .container {
+    border-radius: 3px;
+    width: 100%;
+    height: 757px;
+    overflow: hidden;
+    display: flex;
+  }
   .left {
     width: 280px;
     height: 100%;
   }
   .right {
-    width: 780px;
+    width: 720px;
     height: 100%;
   }
 }

@@ -7,6 +7,7 @@ import Login from './component/Login/index.vue'
 import Forget from './component/Forget/index.vue'
 import Register from './component/Register/index.vue'
 import NotChoose from './component/NotChoose/index.vue'
+import ChatList from './component/ChatList/index.vue'
 
 
 Vue.use(Router)
@@ -33,7 +34,17 @@ let router = new Router({
       path: '/home',
       component: Home,
       children: [
-        { path: '/', component: NotChoose }
+        { 
+          path: '/', 
+          redirect: '/home/chat'
+        },
+        { 
+          path: 'chat', 
+          components: {
+            list: ChatList,
+            detail: NotChoose
+          } 
+        }
       ]
     },
 

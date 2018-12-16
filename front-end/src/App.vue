@@ -31,6 +31,7 @@ html, body {
 }
 body {
   background: url('./assets/bg.jpg');
+  background-size: cover;
 }
 #app {
   height: 100%;
