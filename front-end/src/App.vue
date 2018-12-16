@@ -15,7 +15,7 @@ export default {
     }
   },
   mounted() {
-    // document.getElementsByTagName('body')[0].contentEditable = false
+    // document.getElementsByTagName('body')[0].contentEditable = false;
   }
 }
 </script>
