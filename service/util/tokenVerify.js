@@ -3,7 +3,7 @@ const GLOBAL_CONSTANT = require('../constant/global');
 const responseCode = require('../constant/responseCode');
 
 module.exports = function tokenVerify(req, res, next) {
-  if (req.originalUrl.indexOf('/user/login') >= 0) {
+  if (req.originalUrl.indexOf('/user') >= 0) {
     next();
   } else {
     // console.log(req.headers["authorization"]);
