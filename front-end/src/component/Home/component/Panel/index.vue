@@ -6,7 +6,6 @@
       <i class="select"></i>
     </div>
     <div class="search_bar">
-      <i class="search_icon"></i>
       <input class="search_input" placeholder="搜索"/>
     </div>
     <div class="tab">

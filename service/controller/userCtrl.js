@@ -91,7 +91,7 @@ function login(req, res) {
           account,
           password
         }, JWT_SECRET, {
-          expiresIn: 60 // 600s
+          expiresIn: '24h' // 过期时间，单位s
         });
         res.json({
           code: code.success,
