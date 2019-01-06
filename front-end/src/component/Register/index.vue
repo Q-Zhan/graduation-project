@@ -71,17 +71,19 @@ export default {
 
 <style lang="scss" scoped>
 #register {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 500px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .container {
   width: 500px;
   height: 400px;
   background: white;
   border-radius: 5px;
+  overflow: hidden;
   .form {
     margin: 0 50px;
     margin-top: 20px;

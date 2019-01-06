@@ -3,11 +3,14 @@ const GLOBAL_CONSTANT = require('../constant/global');
 const responseCode = require('../constant/responseCode');
 
 module.exports = function tokenVerify(req, res, next) {
-  if (req.originalUrl.indexOf('/user') >= 0) {
+  // socket请求另外由socket.io自己校验
+  if (req.originalUrl.indexOf('/user') >= 0 || req.originalUrl.indexOf('socket.io') >= 0) {
     next();
   } else {
     // console.log(req.headers["authorization"]);
     const token = req.body.jwt;
+    console.log('jwt error url')
+    console.log(req.originalUrl)
     if (!token) {
       res.json({
         code: responseCode.unAuth

@@ -8,6 +8,9 @@ import Forget from './component/Forget/index.vue'
 import Register from './component/Register/index.vue'
 import NotChoose from './component/NotChoose/index.vue'
 import ChatList from './component/ChatList/index.vue'
+import ChatRoom from './component/ChatRoom/index.vue'
+import FriendList from './component/FriendList/index.vue'
+import AddFriend from './component/AddFriend/index.vue'
 
 
 Vue.use(Router)
@@ -41,10 +44,38 @@ let router = new Router({
         { 
           path: 'chat', 
           components: {
-            list: ChatList,
-            detail: NotChoose
+            list: ChatList, // 包含公共聊天室
+            detail: ChatRoom
+          } 
+        },
+        { 
+          path: 'addFriend', 
+          components: {
+            list: FriendList,
+            detail: AddFriend
           } 
         }
+        // { 
+        //   path: 'moment', 
+        //   components: {
+        //     list: MomentList,
+        //     detail: MomentDetail
+        //   } 
+        // },
+        // { 
+        //   path: 'friend', 
+        //   components: {
+        //     list: FriendList,
+        //     detail: FriendDetail
+        //   } 
+        // },
+        // { 
+        //   path: 'addFriend', 
+        //   components: {
+        //     list: FriendList,
+        //     detail: AddFriend
+        //   } 
+        // },
       ]
     },
 

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Panel from './component/Panel';
+import Panel from '../Panel';
 
 export default {
   components: {
@@ -40,12 +40,13 @@ export default {
 
 <style lang="scss" scoped>
 #home {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  border-radius: 5px;
+  width: 1000px;
+  height: 757px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   overflow: hidden;
-  align-items: center;
   .container {
     border-radius: 3px;
     width: 100%;

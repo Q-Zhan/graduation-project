@@ -6,12 +6,17 @@ const express = require('express');
 const routerCollection = require('./route/index.js');
 const GLOBAL_CONSTANT = require('./constant/global');
 const tokenVerify = require('./util/tokenVerify');
+const socket = require('./util/socket');
+
 
 var app = express();
 
+// 初始化socket
+socket.init(app);
+
 // 设置允许跨域
 app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
   res.header("X-Powered-By",' 3.2.1')
@@ -33,6 +38,7 @@ app.use(tokenVerify);
 // 引入路由表
 routerCollection(app);
 
+// 监听路由请求
 var server = app.listen(8081, function () {
-  console.log('监听8081端口');
+  console.log('监听express端口：8081');
 })

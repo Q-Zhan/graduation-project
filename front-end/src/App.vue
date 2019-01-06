@@ -34,9 +34,8 @@ body {
 }
 #app {
   height: 100%;
-  width: 1000px;
-  margin: 0 auto;
-  border-radius: 5px;
+  width: 100%;
+  overflow: auto;
 }
 a {
   text-decoration: none;
@@ -47,15 +46,19 @@ a {
   height: 0px;
   font-size: 0;
 }
+img {
+  width: 100%;
+  height: 100%;
+}
+input {
+  outline: none;
+}
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s ease;
 }
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
-img {
-  width: 100%;
-  height: 100%;
-}
+
 
 </style>

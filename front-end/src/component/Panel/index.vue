@@ -1,9 +1,20 @@
 <template>
   <div id="panel">
     <div class="user_info">
-      <div class="avatar"><img src="../../../../assets/avatar.jpg"/></div>
+      <div class="avatar"><img src="../../assets/avatar.jpg"/></div>
       <div class="name">Z.</div>
-      <i class="select"></i>
+      <div class="select">
+        <el-dropdown trigger="click">
+          <span class="el-dropdown-link select_icon">
+            123<!-- el-dropdown的点击占位符 -->
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="turnToAddFriend">添加好友</el-dropdown-item>
+            <el-dropdown-item divided>发起群聊</el-dropdown-item>
+            <el-dropdown-item divided>退出</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
     <div class="search_bar">
       <input class="search_input" placeholder="搜索"/>
@@ -44,7 +55,10 @@ export default {
 
   },
   methods: {
-
+    turnToAddFriend() {
+      console.log('ues')
+      this.$router.push('/home/addFriend');
+    }
   }
 }
 </script>
@@ -86,10 +100,16 @@ export default {
     .select {
       width: 30px;
       height: 30px;
-      background: url('../../../../assets/icons.png');
+      background: url('../../assets/icons.png');
       background-position: -434px -398px;
       background-size: 487px 462px;
       cursor: pointer;
+      .select_icon {
+        width: 30px;
+        height: 30px;
+        opacity: 0;
+        
+      }
     }
   }
   .search_bar {
@@ -103,7 +123,7 @@ export default {
       width: 30px;
       height: 30px;
       flex-shrink: 0;
-      background: url('../../../../assets/icons.png');
+      background: url('../../assets/icons.png');
       background-position: -60px -432px;
       background-size: 487px 462px;
     }
@@ -116,6 +136,7 @@ export default {
       background-color: #26292e;
       color: white;
       font-size: 12px;
+      padding-left: 10px;
     }
   }
   .tab {
@@ -133,7 +154,7 @@ export default {
       i {
         width: 35px;
         height: 35px;
-        background: url('../../../../assets/icons.png');
+        background: url('../../assets/icons.png');
         background-size: 487px 462px;
       }
       .chat_choose {
