@@ -10,23 +10,23 @@ module.exports = function tokenVerify(req, res, next) {
     // console.log(req.headers["authorization"]);
     const token = req.body.jwt;
     console.log('jwt error url')
-    console.log(req.originalUrl)
     if (!token) {
       res.json({
         code: responseCode.unAuth
       });
+    } else {
+      jwt.verify(token, GLOBAL_CONSTANT.jwtSecret, function(err, decoded) {
+        if (err) {
+          console.log('jwt error')
+          console.log(err)
+          res.json({
+            code: responseCode.unAuth
+          });
+        } else {
+          req.account = decoded.account;
+          next();
+        }
+      });
     }
-    jwt.verify(token, GLOBAL_CONSTANT.jwtSecret, function(err, decoded) {
-      if (err) {
-        console.log('jwt error')
-        console.log(err)
-        res.json({
-          code: responseCode.unAuth
-        });
-      } else {
-        req.account = decoded.account;
-        next();
-      }
-    });
   }
 }

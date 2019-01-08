@@ -1,13 +1,17 @@
 
 let io;
+let onlineUsers = {}; // 在线用户映射表，key: socket.id、value: userName
 
 function init(app) {
     var http = require('http').Server(app);
     io = require('socket.io')(http);
     io.on('connection', function(socket) {
         socket.emit('connected'); // 通知客户端已连接
-        console.log('a user connected');
-        console.log('socket id:' +socket.id)
+        let socketId = socket.id,
+            userName = socket.handshake.query.userName;
+        onlineUsers[socketId] = userName;
+        // console.log('a user connected');
+        // console.log('socket id:' +socket.id)
         // console.log(socket.handshake)
         // console.log(io.sockets.sockets)
     })
@@ -20,8 +24,12 @@ function init(app) {
 function getSocketIo() {
     return io;
 }
+function getOnlineUsers() {
+    return onlineUsers;
+}
 
 module.exports = {
     init: init,
-    getSocketIo: getSocketIo
+    getSocketIo: getSocketIo,
+    getOnlineUsers: getOnlineUsers
 }

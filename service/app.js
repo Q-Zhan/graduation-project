@@ -8,7 +8,6 @@ const GLOBAL_CONSTANT = require('./constant/global');
 const tokenVerify = require('./util/tokenVerify');
 const socket = require('./util/socket');
 
-
 var app = express();
 
 // 初始化socket
@@ -33,7 +32,8 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 // 验证token
-app.use(tokenVerify);
+// TODO: 为了验证接口先不引入验证
+// app.use(tokenVerify);
 
 // 引入路由表
 routerCollection(app);

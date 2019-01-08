@@ -8,7 +8,7 @@
   - method: post
   - auth: false
   - argument:  
-    account、password、mail
+      account、password、mail
   - response: 无
 
 - 验证邮箱
@@ -16,7 +16,7 @@
   - method: post
   - auth: false
   - argument:  
-    account、mail
+      account、mail
   - response: 无
 
 - 找回密码
@@ -24,7 +24,7 @@
   - method: post
   - auth: false
   - argument:  
-    account、password
+      account、password
   - response: 无
 
 - 用户登录
@@ -32,10 +32,26 @@
   - method: post
   - auth: false
   - argument:  
-    account、password
+      account、password
   - response: 
     {
       token: '...',
+    }
+
+## friend模块
+- 搜索用户
+  - url: /friend/searchUser
+  - method: get
+  - auth: true
+  - argument:  
+      userId
+  - response: 
+    {
+      users: [
+        {
+          ...用户详细信息
+        }
+      ]
     }
 
 

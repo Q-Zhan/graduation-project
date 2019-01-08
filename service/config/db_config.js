@@ -4,6 +4,7 @@ module.exports = {
     host: 'localhost',
     user: 'root',
     password : 'a01301212',
-    database : 'onlinechat'
+    database : 'onlinechat',
+    multipleStatements: true
   }
 }
