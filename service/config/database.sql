@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.24)
 # Database: onlinechat
-# Generation Time: 2019-01-07 09:47:35 +0000
+# Generation Time: 2019-01-11 12:26:13 +0000
 # ************************************************************
 
 
@@ -111,9 +111,24 @@ CREATE TABLE `private_message` (
 DROP TABLE IF EXISTS `social_info`;
 
 CREATE TABLE `social_info` (
-  `userID` char(100) NOT NULL DEFAULT '' COMMENT '用户ID'
+  `userID` char(100) NOT NULL DEFAULT '' COMMENT '用户ID',
+  `name` char(100) DEFAULT '默认昵称' COMMENT '昵称',
+  `area` char(100) DEFAULT NULL COMMENT '地区',
+  `sign` char(100) DEFAULT NULL COMMENT '自我简介',
+  `gender` int(11) DEFAULT NULL COMMENT '性别：0-女，1-男'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `social_info` WRITE;
+/*!40000 ALTER TABLE `social_info` DISABLE KEYS */;
+
+INSERT INTO `social_info` (`userID`, `name`, `area`, `sign`, `gender`)
+VALUES
+	('123','默认昵称',NULL,NULL,NULL),
+	('111','默认昵称',NULL,NULL,NULL),
+	('33311','默认昵称',NULL,NULL,NULL);
+
+/*!40000 ALTER TABLE `social_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table user_group
@@ -146,10 +161,9 @@ LOCK TABLES `user_info` WRITE;
 
 INSERT INTO `user_info` (`userID`, `password`, `mail`)
 VALUES
-	('1','1','1'),
-	('12','1','1'),
+	('111','111','111'),
 	('123','123','123'),
-	('admin','admin','380776767@qq.com');
+	('33311','33311','33331');
 
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
