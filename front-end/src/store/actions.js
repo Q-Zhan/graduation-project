@@ -66,4 +66,25 @@ export default {
       return {code: responceCode.error};
     })
   },
+  searchUser({ commit, state}, { id }) {
+    return fetch(API + '/friend/searchUser', {
+      method: 'get',
+      headers: {
+        // 'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${id}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.code == responceCode.success) {
+        // commit('getToken', {token: data.token})
+        console.log(data)
+      }
+      return data;
+    })
+    .catch(err => {
+      console.error(err)
+      return {code: responceCode.error};
+    })
+  },
 }

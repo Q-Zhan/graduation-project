@@ -9,7 +9,7 @@
             123<!-- el-dropdown的点击占位符 -->
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="turnToAddFriend">添加好友</el-dropdown-item>
+            <el-dropdown-item @click.native="pushRouter('/home/addFriend')">添加好友</el-dropdown-item>
             <el-dropdown-item divided>发起群聊</el-dropdown-item>
             <el-dropdown-item divided>退出</el-dropdown-item>
           </el-dropdown-menu>
@@ -21,16 +21,16 @@
     </div>
     <div class="tab">
       <div class="tab_item">
-        <i class="chat_not_choose" v-show="false"></i>
-        <i class="chat_choose"></i>
+        <i class="chat_not_choose" v-show="!isChatRoute"></i>
+        <i class="chat_choose" v-show="isChatRoute"></i>
       </div>
       <div class="tab_item">
-        <i class="public_not_choose"></i>
-        <i class="public_choose" v-show="false"></i>
+        <i class="moment_not_choose" v-show="!isMomentRoute"></i>
+        <i class="moment_choose" v-show="isMomentRoute"></i>
       </div>
       <div class="tab_item">
-        <i class="friend_not_choose"></i>
-        <i class="friend_choose" v-show="false"></i>
+        <i class="friend_not_choose" v-show="!isFriendRoute"></i>
+        <i class="friend_choose" v-show="isFriendRoute"></i>
       </div>
     </div>
     <router-view name="list"></router-view>
@@ -49,15 +49,23 @@ export default {
   computed: {
     token() {
       return this.$store.state.user.token;
-    }
+    },
+    isChatRoute() {
+      return this.$route.meta.listTabs == 'chat';
+    },
+    isFriendRoute() {
+      return this.$route.meta.listTabs == 'friend';
+    },
+    isMomentRoute() {
+      return this.$route.meta.listTabs == 'moment';
+    },
   },
   mounted() {
 
   },
   methods: {
-    turnToAddFriend() {
-      console.log('ues')
-      this.$router.push('/home/addFriend');
+    pushRouter(path) {
+      this.$router.push(path);
     }
   }
 }
@@ -163,10 +171,10 @@ export default {
       .chat_not_choose {
         background-position: -150px -96px;
       }
-      .public_choose {
+      .moment_choose {
         background-position: -304px -281px;
       }
-      .public_not_choose {
+      .moment_not_choose {
         background-position: -376px -322px;
       }
       .friend_choose {

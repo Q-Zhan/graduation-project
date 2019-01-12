@@ -46,14 +46,20 @@ let router = new Router({
           components: {
             list: ChatList, // 包含公共聊天室
             detail: ChatRoom
-          } 
+          },
+          meta: {
+            listTabs: 'chat', // 用于列表切换
+          }
         },
         { 
           path: 'addFriend', 
           components: {
             list: FriendList,
             detail: AddFriend
-          } 
+          },
+          meta: {
+            listTabs: 'friend', // 用于列表切换
+          }
         }
         // { 
         //   path: 'moment', 

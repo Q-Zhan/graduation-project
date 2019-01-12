@@ -2,7 +2,7 @@
   <div id="addFriend">
     <div class="title">搜索用户</div>
     <div class="search">
-        <input placeholder="请输入chat号"/>
+        <input placeholder="请输入chat号" @keyup.enter="search" v-model="searchValue"/>
     </div>
   </div>
 </template>
@@ -13,7 +13,7 @@
 export default {
   data () {
     return {
-      a: '123'
+      searchValue: ''
     }
   },
   computed: {
@@ -25,7 +25,9 @@ export default {
 
   },
   methods: {
-
+    search() {
+      console.log('search')
+    }
   }
 }
 </script>
