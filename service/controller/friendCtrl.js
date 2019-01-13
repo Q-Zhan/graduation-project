@@ -5,7 +5,7 @@ const GLOBAL_CONSTANT = require('../constant/global');
 
 function searchUser(req, res) {
     let { userId } = req.query;
-    let sql = `select * from user_info where userID like '%${userId}%'`;
+    let sql = `select * from social_info where userID like '%${userId}%'`;
     db.query(sql, function(error, result) {
       if (error) {
         res.json({
