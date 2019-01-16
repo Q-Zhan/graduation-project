@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { responceCode } from '../../constant';
+import { RESPONCE_CODE } from '../../constant';
 import io from 'socket.io-client';
 
 export default {
@@ -39,7 +39,7 @@ export default {
 
   },
   mounted() {
-    const socket = io('http://localhost:8082?userName=qianxinzhan')
+    const socket = io('http://localhost:8082?userId=qianxinzhan')
     console.log(socket)
     console.log(socket.id)
   },
@@ -55,7 +55,7 @@ export default {
         mail
       })
       .then(data => {
-        if (data.code == responceCode.error) {
+        if (data.code == RESPONCE_CODE.error) {
           this.$message.error('邮箱验证失败');
         } else {
           this.$message.success('邮箱验证成功');
@@ -74,7 +74,7 @@ export default {
         password
       })
       .then(data => {
-        if (data.code == responceCode.error) {
+        if (data.code == RESPONCE_CODE.error) {
           this.$message.error('修改密码失败');
         } else {
           this.$message.success('修改密码成功');

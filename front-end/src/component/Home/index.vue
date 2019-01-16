@@ -14,6 +14,7 @@
 
 <script>
 import Panel from '../Panel';
+import io from 'socket.io-client';
 
 export default {
   components: {
@@ -25,15 +26,27 @@ export default {
     }
   },
   computed: {
-    isLoading() {
-      return this.$store.state.isLoading
+    userInfo() {
+      return this.$store.state.user.info;
     }
   },
   mounted() {
-
+    // TODO:做一个socket校验
+    const socket = io(`http://localhost:8082?userId=${this.userInfo.userID}`);
+    this.$store.commit('setSocket', { socket });
+    this.initSocketEvent(socket);
+    
   },
   methods: {
-
+    initSocketEvent(socket) {
+      socket.on('applyFriend', (data) => {
+        this.$notify({
+          title: '提示',
+          message: '您收到一条好友请求',
+          duration: 3000
+        });
+      });
+    }
   }
 }
 </script>

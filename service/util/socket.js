@@ -1,15 +1,26 @@
 
-let io;
-let onlineUsers = {}; // 在线用户映射表，key: socket.id、value: userName
+let io = null;
+let socketToUserMap = {}; // 在线用户映射表，key: socket.id、value: userId
+let userToSocketMap = {}; // 在线用户映射表，key: userId、value: socket对象
 
 function init(app) {
     var http = require('http').Server(app);
     io = require('socket.io')(http);
+    io.use(function(socket, next) {
+        // TODO：仅在创建时调用，校验token
+        console.log('!!!');
+        next();
+    });
     io.on('connection', function(socket) {
         socket.emit('connected'); // 通知客户端已连接
+        
         let socketId = socket.id,
-            userName = socket.handshake.query.userName;
-        onlineUsers[socketId] = userName;
+            userId = socket.handshake.query.userId;
+            console.log(userId)
+        socketToUserMap[socketId] = userId;
+        userToSocketMap[userId] = socket;
+    
+
         // console.log('a user connected');
         // console.log('socket id:' +socket.id)
         // console.log(socket.handshake)
@@ -24,12 +35,16 @@ function init(app) {
 function getSocketIo() {
     return io;
 }
-function getOnlineUsers() {
-    return onlineUsers;
+function getSocketToUserMap() {
+    return socketToUserMap;
+}
+function getUserToSocketMap() {
+    return userToSocketMap;
 }
 
 module.exports = {
-    init: init,
-    getSocketIo: getSocketIo,
-    getOnlineUsers: getOnlineUsers
+    init,
+    getSocketIo,
+    getSocketToUserMap,
+    getUserToSocketMap
 }

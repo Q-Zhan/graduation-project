@@ -5,5 +5,6 @@ const friendCtrl = require('../controller/friendCtrl');
 const router = base.router;
 
 router.get('/friend/searchUser' , friendCtrl.searchUser); // 根据用户id进行模糊查找
+router.post('/friend/addFriend', friendCtrl.addFriend);
 
 module.exports = router;

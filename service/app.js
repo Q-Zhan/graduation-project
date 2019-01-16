@@ -19,9 +19,11 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
   res.header("X-Powered-By",' 3.2.1')
-  // res.header("Content-Type", "application/json;charset=utf-8");
   next();
 });
+
+// 接口禁止缓存
+app.disable('etag');
 
 // 解析请求参数
 app.use(bodyParser.json()); 
@@ -32,8 +34,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 // 验证token
-// TODO: 为了验证接口先不引入验证
-// app.use(tokenVerify);
+app.use(tokenVerify);
 
 // 引入路由表
 routerCollection(app);

@@ -82,7 +82,7 @@ function modifyPassword(req, res) {
 
 function login(req, res) {
   let { account, password } = req.body;
-  let sql = 'select * from user_info where userID=?';
+  let sql = 'select * from user_info natural join social_info where userID=?';
   let sqlParams = [account];
   db.query(sql, sqlParams,function (error, result) {
     if (error) {
@@ -100,7 +100,8 @@ function login(req, res) {
         });
         res.json({
           code: CODE.success,
-          token: token
+          token: token,
+          userInfo: result[0]
         });
       } else {
         res.json({

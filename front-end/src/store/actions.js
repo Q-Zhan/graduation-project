@@ -1,5 +1,5 @@
 
-import { API, responceCode } from '../constant'
+import { API, RESPONCE_CODE } from '../constant'
 import 'whatwg-fetch'
 
 export default {
@@ -14,7 +14,7 @@ export default {
     .then(res => res.json())
     .catch(err => {
       console.error(err)
-      return {code: responceCode.error};
+      return {code: RESPONCE_CODE.error};
     })
   },
   verifyMail({ commit, state}, { account, mail}) {
@@ -29,7 +29,7 @@ export default {
     .then(res => res.json())
     .catch(err => {
       console.error(err)
-      return {code: responceCode.error};
+      return {code: RESPONCE_CODE.error};
     })
   },
   modifyPassword({ commit, state}, { account, password}) {
@@ -43,7 +43,7 @@ export default {
     .then(res => res.json())
     .catch(err => {
       console.error(err)
-      return {code: responceCode.error};
+      return {code: RESPONCE_CODE.error};
     })
   },
   login({ commit, state}, { account, password}) {
@@ -56,27 +56,44 @@ export default {
     })
     .then(res => res.json())
     .then(data => {
-      if (data.code == responceCode.success) {
-        commit('getToken', {token: data.token})
+      if (data.code == RESPONCE_CODE.success) {
+        commit('setToken', {token: data.token});
+        commit('setUserInfo', {info: data.userInfo});
       }
       return data;
     })
     .catch(err => {
       console.error(err)
-      return {code: responceCode.error};
+      return {code: RESPONCE_CODE.error};
     })
   },
   searchUser({ commit, state}, { id }) {
     return fetch(API + `friend/searchUser?userId=${id}`, {
       method: 'get',
       headers: {
+        authorization: state.user.token
         // 'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
     .then(res => res.json())
     .catch(err => {
       console.error(err)
-      return {code: responceCode.error};
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  addFriend({ commit, state}, { id }) {
+    return fetch(API + `friend/addFriend`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${id}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
     })
   },
 }

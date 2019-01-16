@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {responceCode} from '../../constant';
+import {RESPONCE_CODE} from '../../constant';
 
 export default {
   data() {
@@ -59,10 +59,10 @@ export default {
       })
       .then(data => {
         switch(data.code) {
-          case responceCode.error:
+          case RESPONCE_CODE.error:
             this.$message.error('账号密码错误');
             break;
-          case responceCode.success:
+          case RESPONCE_CODE.success:
             this.$message.success('登录成功');
             this.$router.push('/home');
             break;

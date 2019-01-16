@@ -7,9 +7,7 @@ module.exports = function tokenVerify(req, res, next) {
   if (req.originalUrl.indexOf('/user') >= 0 || req.originalUrl.indexOf('socket.io') >= 0) {
     next();
   } else {
-    // console.log(req.headers["authorization"]);
-    const token = req.body.jwt;
-    console.log('jwt error url')
+    const token = req.headers["authorization"];
     if (!token) {
       res.json({
         code: responseCode.unAuth
@@ -23,7 +21,7 @@ module.exports = function tokenVerify(req, res, next) {
             code: responseCode.unAuth
           });
         } else {
-          req.account = decoded.account;
+          req.uid = decoded.account;
           next();
         }
       });

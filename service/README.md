@@ -36,14 +36,15 @@
   - response: 
     {
       token: '...',
+      userInfo: {}
     }
 
 ## friend模块
-- 搜索用户
+- 搜索用户(模糊搜索)
   - url: /friend/searchUser
   - method: get
   - auth: true
-  - argument:  
+  - argument: 
       userId
   - response: 
     {
@@ -55,6 +56,21 @@
     }
 
 - 申请添加好友
+  - url: /friend/addFriend
+  - method: post
+  - auth: true
+  - argument:  
+      userId
+  - response: 无
+
+- 同意他人的好友请求
+  - url: /friend/accept
+  - method: post
+  - auth: true
+  - argument:  
+      userId
+  - response: 无
+
 
 
     

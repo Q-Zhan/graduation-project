@@ -6,9 +6,17 @@
     </div>
     <div class="user_list">
       <div class="user" v-for="item in userList" :key="item.userID">
-        <div class="user_avatar">{{ item.avatar }}</div>
-        <div class="user_name">{{ item.name }}</div>
-        <div class="user_area">{{ item.area }}</div>
+        <div class="user_avatar"><img :src="item.avatar || defaultAvatar"/></div>
+        <div class="user_info">
+          <div class="user_name_id">
+            <span class="name">{{ item.name }}</span>
+            <span class="id">({{ item.userID }})</span>
+          </div>
+          <div class="user_gender_area">
+            <div class="gender">{{ formatGender(item.gender) }}</div>
+            <div class="area">{{ item.area }}</div>
+          </div>
+        </div>
         <div class="add_button" @click="addFriend(item)">添加</div>
       </div>
     </div>
@@ -16,11 +24,12 @@
 </template>
 
 <script>
-import { responceCode } from '../../constant';
+import { RESPONCE_CODE } from '../../constant';
 
 export default {
   data () {
     return {
+      defaultAvatar: require('../../assets/avatar.jpg'),
       searchValue: '',
       userList: []
     }
@@ -39,17 +48,36 @@ export default {
         id: this.searchValue
       })
       .then(data => {
-        if (data.code == responceCode.success) {
-          console.log(data)
-          this.userList = data.users;
-          console.log(this.userList[0].name)
-        } else {
-          this.$message.error('服务出错，请稍后重试');
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            this.userList = data.users;
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
         }
       })
     },
     addFriend(item) {
       let { userID } = item;
+      this.$store.dispatch('addFriend', {
+        id: userID
+      })
+      .then(data => {
+        console.log(data);
+      })
+    },
+    formatGender(gender) {
+      if (gender === 0) {
+        return '女';
+      } else if (gender === 1) {
+        return '男';
+      } else {
+        return '';
+      }
     }
   }
 }
@@ -84,7 +112,57 @@ export default {
       :-ms-input-placeholder { color:#d6d6d6; }
   }
   .user {
-    border: 1px solid black;
+    border-bottom: 1px solid #e6e3e3;
+    height: 70px;
+    display: flex;
+    position: relative;
+    align-items: center;
+    .user_avatar {
+      width: 50px;
+      height: 50px;
+      margin-left: 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .user_info {
+      margin-left: 20px;
+      .user_name_id {
+        font-size: 16px;
+        font-weight: 400;
+        height: 20px;
+        .id {
+          color: gray;
+        }
+      }
+      .user_gender_area {
+        font-size: 14px;
+        display: flex;
+        height: 20px;
+        margin-top: 8px;
+        .area {
+          color: gray;
+          margin-left: 4px;
+        }
+      }
+    }
+    .add_button {
+      cursor: pointer;
+      position: absolute;
+      top: 18px;
+      right: 30px;
+      width: 70px;
+      height: 34px;
+      background-color: rgb(52, 164, 41);
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 34px;
+      border: 1px solid rgb(26, 119, 18);
+    }
   }
 }
 </style>

@@ -1,5 +1,7 @@
 export default {
   user: {
-    token: ''
+    token: '',
+    info: {}
   },
+  socket: null
 }

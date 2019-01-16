@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { responceCode } from '../../constant';
+import { RESPONCE_CODE } from '../../constant';
 
 export default {
   data() {
@@ -52,13 +52,13 @@ export default {
       })
       .then(data => {
         switch(data.code) {
-          case responceCode.error:
+          case RESPONCE_CODE.error:
             this.$message.error('注册失败：系统错误');
             break;
-          case responceCode.dbRepeat:
+          case RESPONCE_CODE.dbRepeat:
             this.$message.error('注册失败：该用户名已被注册');
             break;
-          case responceCode.success:
+          case RESPONCE_CODE.success:
             this.$message.success('注册成功');
             this.$router.push('/login');
             break;

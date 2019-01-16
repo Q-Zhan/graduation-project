@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { responceCode } from '../../constant';
+import { RESPONCE_CODE } from '../../constant';
 
 export default {
   data() {
