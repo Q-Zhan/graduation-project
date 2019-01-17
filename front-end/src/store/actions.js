@@ -3,6 +3,7 @@ import { API, RESPONCE_CODE } from '../constant'
 import 'whatwg-fetch'
 
 export default {
+  // user模块
   register({ commit, state}, { account, password, mail}) {
     return fetch(API + 'user/create', {
       method: 'post',
@@ -67,12 +68,13 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+
+  // friend模块
   searchUser({ commit, state}, { id }) {
     return fetch(API + `friend/searchUser?userId=${id}`, {
       method: 'get',
       headers: {
         authorization: state.user.token
-        // 'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
     .then(res => res.json())
@@ -89,6 +91,19 @@ export default {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: `userId=${id}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  getFriendList({ commit, state}, { }) {
+    return fetch(API + `friend/list`, {
+      method: 'get',
+      headers: {
+        authorization: state.user.token
+      }
     })
     .then(res => res.json())
     .catch(err => {

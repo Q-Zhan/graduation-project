@@ -31,14 +31,14 @@ export default {
     }
   },
   mounted() {
-    // TODO:做一个socket校验
     const socket = io(`http://localhost:8082?userId=${this.userInfo.userID}`);
     this.$store.commit('setSocket', { socket });
     this.initSocketEvent(socket);
-    
   },
   methods: {
+    // 这里做一些全局事件的监听
     initSocketEvent(socket) {
+      // 接受他人的好友请求
       socket.on('applyFriend', (data) => {
         this.$notify({
           title: '提示',

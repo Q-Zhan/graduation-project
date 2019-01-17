@@ -6,17 +6,16 @@ let userToSocketMap = {}; // 在线用户映射表，key: userId、value: socket
 function init(app) {
     var http = require('http').Server(app);
     io = require('socket.io')(http);
-    io.use(function(socket, next) {
-        // TODO：仅在创建时调用，校验token
-        console.log('!!!');
-        next();
-    });
+    // io.use(function(socket, next) {
+    //     // TODO：仅在创建时调用，校验token
+    //     console.log('!!!');
+    //     next();
+    // });
     io.on('connection', function(socket) {
         socket.emit('connected'); // 通知客户端已连接
         
         let socketId = socket.id,
             userId = socket.handshake.query.userId;
-            console.log(userId)
         socketToUserMap[socketId] = userId;
         userToSocketMap[userId] = socket;
     

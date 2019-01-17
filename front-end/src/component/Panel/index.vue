@@ -20,20 +20,20 @@
       <input class="search_input" placeholder="搜索"/>
     </div>
     <div class="tab">
-      <div class="tab_item">
+      <div class="tab_item" @click="pushRouter('/home/chat')">
         <i class="chat_not_choose" v-show="!isChatRoute"></i>
         <i class="chat_choose" v-show="isChatRoute"></i>
       </div>
-      <div class="tab_item">
+      <div class="tab_item" @click="pushRouter('/home/moment')">
         <i class="moment_not_choose" v-show="!isMomentRoute"></i>
         <i class="moment_choose" v-show="isMomentRoute"></i>
       </div>
-      <div class="tab_item">
+      <div class="tab_item" @click="pushRouter('/home/friend')">
         <i class="friend_not_choose" v-show="!isFriendRoute"></i>
         <i class="friend_choose" v-show="isFriendRoute"></i>
       </div>
     </div>
-    <router-view name="list"></router-view>
+    <router-view name="list" class="list_view"></router-view>
   </div>
 </template>
 
@@ -202,6 +202,10 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
+  }
+  .list_view {
+    height: 604px;
+    width: 100%;
   }
 }
 </style>

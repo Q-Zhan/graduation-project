@@ -9,7 +9,10 @@ import Register from './component/Register/index.vue'
 import NotChoose from './component/NotChoose/index.vue'
 import ChatList from './component/ChatList/index.vue'
 import ChatRoom from './component/ChatRoom/index.vue'
+import MomentList from './component/MomentList/index.vue'
+import MomentDetail from './component/MomentDetail/index.vue'
 import FriendList from './component/FriendList/index.vue'
+import FriendDetail from './component/FriendDetail/index.vue'
 import AddFriend from './component/AddFriend/index.vue'
 
 
@@ -50,6 +53,26 @@ let router = new Router({
           meta: {
             listTabs: 'chat', // 用于列表切换
           }
+        },
+        { 
+          path: 'moment', 
+          components: {
+            list: MomentList,
+            detail: MomentDetail
+          },
+          meta: {
+            listTabs: 'moment'
+          }
+        },
+        { 
+          path: 'friend',
+          components: {
+            list: FriendList,
+            detail: FriendDetail
+          },
+          meta: {
+            listTabs: 'friend'
+          } 
         },
         { 
           path: 'addFriend', 

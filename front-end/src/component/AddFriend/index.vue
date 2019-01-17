@@ -50,7 +50,7 @@ export default {
       .then(data => {
         switch(data.code) {
           case RESPONCE_CODE.unAuth:
-            this.$message.error('登录失效');
+            this.$message.error('登录状态失效');
             this.$router.push('/login');
             break;
           case RESPONCE_CODE.success:
@@ -67,7 +67,17 @@ export default {
         id: userID
       })
       .then(data => {
-        console.log(data);
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            this.$message.success('')
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
       })
     },
     formatGender(gender) {

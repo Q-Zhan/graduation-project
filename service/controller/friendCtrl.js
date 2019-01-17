@@ -44,26 +44,29 @@ function addFriend(req, res) {
       });
     }
   })
-  //socket.to(userIdSocket.id).emit('applyFriend')
+}
 
-  // let sql = `insert into friend(userID, friendID, timeStamp) values(${uid}, ${userId}, ${+new Date()})`;
-  // db.query(sql, function(error, result) {
-  //   if (error) {
-  //     res.json({
-  //       code: CODE.error,
-  //       error
-  //     });
-  //   } else {
-  //     console.log(result);
-  //     res.json({
-  //       code: CODE.success
-  //     });
-  //   }
-  // })
+function getFriendList(req, res) {
+  const uid = req.uid;
+  let sql = `select * from social_info where userID in (select friendID from friend where userID=${uid})`;
+  db.query(sql, function(error, result) {
+    if (error) {
+      res.json({
+        code: CODE.error,
+        error
+      });
+    } else {
+      res.json({
+        code: CODE.success,
+        list: result
+      });
+    }
+  })
 }
 
 
 module.exports = {
     searchUser,
-    addFriend
+    addFriend,
+    getFriendList
 }

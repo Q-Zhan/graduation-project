@@ -63,6 +63,20 @@
       userId
   - response: 无
 
+- 获取所有好友
+  - url: /friend/list
+  - method: get
+  - auth: true
+  - argument: 无
+  - response: 
+    {
+      list: [
+        {
+          ...好友详细信息
+        }
+      ]
+    }
+
 - 同意他人的好友请求
   - url: /friend/accept
   - method: post
