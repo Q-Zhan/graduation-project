@@ -2,9 +2,15 @@ const jwt = require('jsonwebtoken');
 const GLOBAL_CONSTANT = require('../constant/global');
 const responseCode = require('../constant/responseCode');
 
+let orginUrl = '';
+function check(str) {
+  return orginUrl.indexOf(str) >= 0;
+}
+
 module.exports = function tokenVerify(req, res, next) {
-  // socket请求另外由socket.io自己校验
-  if (req.originalUrl.indexOf('/user') >= 0 || req.originalUrl.indexOf('socket.io') >= 0) {
+  const authType = ['/user', 'socket', '.jpg', '.jpeg', '.png', '.gif'];
+  orginUrl = req.originalUrl;
+  if (authType.some(check)) {
     next();
   } else {
     const token = req.headers["authorization"];

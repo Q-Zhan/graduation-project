@@ -1,6 +1,13 @@
 <template>
   <div id="friendList">
-    friendList
+    <div class="title">群组</div>
+    <div class="title">好友</div>
+    <div class="friend" v-for="(item, index) in friendList" :key="index">
+      <div class="friend_avatar">
+        <img :src="item.avatar || defaultAvatar"/>
+      </div>
+      <div class="friend_name">{{ item.name }}</div>
+    </div>
   </div>
 </template>
 
@@ -10,15 +17,13 @@ import { RESPONCE_CODE } from '../../constant';
 export default {
   data() {
     return {
-      userInfo: {
-        account: "",
-        password: "",
-        mail: ''
-      }
+      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
     };
   },
   computed: {
-
+    friendList() {
+      return this.$store.state.user.friendList;
+    }
   },
   mounted() {
     this.getFriendList();
@@ -47,5 +52,34 @@ export default {
 <style lang="scss" scoped>
 #friendList {
   overflow: auto;
+  .title {
+    font-size: 14px;
+    background-color: #292d32;
+    color: #787b87;
+    padding: 1px 18px;
+    overflow: hidden;
+  }
+  .friend {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 10px 18px 9px 18px;
+    border-bottom: 1px solid #292c33;
+    cursor: pointer;
+    .friend_avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .friend_name {
+      font-weight: 400;
+      font-family: Helvetica Neue,Helvetica,Hiragino Sans GB,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,Arial,sans-serif;
+      margin-left: 10px;
+      color: white;
+      line-height: 30px;
+      font-size: 13px;
+    }
+  }
 }
 </style>

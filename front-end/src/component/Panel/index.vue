@@ -1,12 +1,12 @@
 <template>
   <div id="panel">
     <div class="user_info">
-      <div class="avatar"><img src="../../assets/avatar.jpg"/></div>
-      <div class="name">Z.</div>
+      <div class="avatar"><img :src="userInfo.avatar || defaultAvatar"/></div>
+      <div class="name">{{ userInfo.name }}</div>
       <div class="select">
         <el-dropdown trigger="click">
           <span class="el-dropdown-link select_icon">
-            123<!-- el-dropdown的点击占位符 -->
+            123<!-- hack一下，el-dropdown的点击占位符 -->
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="pushRouter('/home/addFriend')">添加好友</el-dropdown-item>
@@ -43,12 +43,16 @@
 export default {
   data () {
     return {
+      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
       lists: [1,2,2,2,3,23,2,32,3,23,123]
     }
   },
   computed: {
     token() {
       return this.$store.state.user.token;
+    },
+    userInfo() {
+      return this.$store.state.user.info;
     },
     isChatRoute() {
       return this.$route.meta.listTabs == 'chat';

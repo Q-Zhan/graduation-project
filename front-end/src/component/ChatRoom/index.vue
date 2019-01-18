@@ -31,6 +31,6 @@ export default {
 #chatroom {
   width: 100%;
   height: 100%;
-  background: blue;
+  background: white;
 }
 </style>

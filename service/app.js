@@ -36,6 +36,9 @@ app.use(cookieParser());
 // 验证token
 app.use(tokenVerify);
 
+// 使用静态资源目录
+app.use(express.static('public'));
+
 // 引入路由表
 routerCollection(app);
 

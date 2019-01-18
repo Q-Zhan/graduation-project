@@ -29,7 +29,7 @@ import { RESPONCE_CODE } from '../../constant';
 export default {
   data () {
     return {
-      defaultAvatar: require('../../assets/avatar.jpg'),
+      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
       searchValue: '',
       userList: []
     }
@@ -99,11 +99,11 @@ export default {
   height: 100%;
   background: #eee;
   .title {
-      padding: 10px 0;
-      padding-left: 20px;
-      border-bottom: 1px solid #d6d6d6;
-      color: rgb(122, 120, 120);
-      font-size: 18px;
+    margin: 0 19px;
+    padding: 10px 0;
+    border-bottom: 1px solid #d6d6d6;
+    text-align: center;
+    font-size: 14px;
   }
   .search {
       width: 100%;
