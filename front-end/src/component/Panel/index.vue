@@ -31,6 +31,7 @@
       <div class="tab_item" @click="pushRouter('/home/friend')">
         <i class="friend_not_choose" v-show="!isFriendRoute"></i>
         <i class="friend_choose" v-show="isFriendRoute"></i>
+        <div class="red_dot" v-show="applyFriend.length"></div>
       </div>
     </div>
     <router-view name="list" class="list_view"></router-view>
@@ -43,7 +44,7 @@
 export default {
   data () {
     return {
-      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
+      defaultAvatar: require('../../assets/defaultAvatar.png'),
       lists: [1,2,2,2,3,23,2,32,3,23,123]
     }
   },
@@ -53,6 +54,9 @@ export default {
     },
     userInfo() {
       return this.$store.state.user.info;
+    },
+    applyFriend() {
+      return this.$store.state.friend.applyFriend;
     },
     isChatRoute() {
       return this.$route.meta.listTabs == 'chat';
@@ -120,7 +124,8 @@ export default {
         width: 30px;
         height: 30px;
         opacity: 0;
-        
+        padding-bottom: 7px;
+        padding-right: 4px;
       }
     }
   }
@@ -163,6 +168,15 @@ export default {
       display: flex;
       justify-content: center;
       cursor: pointer;
+      .red_dot {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgb(251, 43, 35);
+        top: 4px;
+        right: 30px;
+      }
       i {
         width: 35px;
         height: 35px;

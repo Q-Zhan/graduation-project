@@ -3,10 +3,10 @@
     <div class="container">
       <el-form label-position='top' label-width="80px" :model="userInfo" class="form">
         <el-form-item label="账号">
-          <el-input v-model="userInfo.account"></el-input>
+          <el-input v-model="userInfo.account" :disabled="isVerified"></el-input>
         </el-form-item>
         <el-form-item label="注册邮箱">
-          <el-input v-model="userInfo.mail"></el-input>
+          <el-input v-model="userInfo.mail" :disabled="isVerified"></el-input>
         </el-form-item>
         <el-form-item label="新密码" v-show="isVerified">
           <el-input v-model="userInfo.password" placeholder="仅限6-10位英文字母或数字"></el-input>
@@ -22,7 +22,7 @@
 
 <script>
 import { RESPONCE_CODE } from '../../constant';
-import io from 'socket.io-client';
+
 
 export default {
   data() {
@@ -39,9 +39,7 @@ export default {
 
   },
   mounted() {
-    const socket = io('http://localhost:8082?userId=qianxinzhan')
-    console.log(socket)
-    console.log(socket.id)
+ 
   },
   methods: {
     verifyMail() {

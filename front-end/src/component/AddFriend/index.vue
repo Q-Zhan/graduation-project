@@ -13,7 +13,7 @@
             <span class="id">({{ item.userID }})</span>
           </div>
           <div class="user_gender_area">
-            <div class="gender">{{ formatGender(item.gender) }}</div>
+            <i :class="formatGender(item.gender)"></i>
             <div class="area">{{ item.area }}</div>
           </div>
         </div>
@@ -29,7 +29,7 @@ import { RESPONCE_CODE } from '../../constant';
 export default {
   data () {
     return {
-      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
+      defaultAvatar: require('../../assets/defaultAvatar.png'),
       searchValue: '',
       userList: []
     }
@@ -73,7 +73,7 @@ export default {
             this.$router.push('/login');
             break;
           case RESPONCE_CODE.success:
-            this.$message.success('')
+            this.$message.success('发送请求成功')
             break;
           default:
             this.$message.error('服务出错，请稍后重试');
@@ -82,11 +82,11 @@ export default {
     },
     formatGender(gender) {
       if (gender === 0) {
-        return '女';
+        return 'women';
       } else if (gender === 1) {
-        return '男';
+        return 'men';
       } else {
-        return '';
+        return 'hidden';
       }
     }
   }
@@ -151,11 +151,29 @@ export default {
       .user_gender_area {
         font-size: 14px;
         display: flex;
+        align-items: center;
         height: 20px;
         margin-top: 8px;
         .area {
           color: gray;
           margin-left: 4px;
+          padding-top: 2px;
+        }
+        i {
+          width: 16px;
+          height: 16px;
+          background: url('../../assets/icons.png') no-repeat;
+        }
+        .hidden {
+          display: none;
+        }
+        .men {
+          background-position: -384px -304px;
+          background-size: 487px 462px;
+        }
+        .women {
+          background-position: -368px -304px;
+          background-size: 487px 462px;
         }
       }
     }

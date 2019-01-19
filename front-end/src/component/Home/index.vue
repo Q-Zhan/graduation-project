@@ -40,12 +40,18 @@ export default {
     initSocketEvent(socket) {
       // 接受他人的好友请求
       socket.on('applyFriend', (data) => {
+        console.log(data)
+        this.$store.commit('addApplyFriend', { applyFriend: data })
         this.$notify({
           title: '提示',
           message: '您收到一条好友请求',
           duration: 3000
         });
       });
+      // 发出的好友请求被处理
+      socket.on('applyFriendResult', data => {
+        // console.log
+      })
     }
   }
 }

@@ -9,6 +9,12 @@ export default {
     state.socket = socket;
   },
   setFriendList(state, { friendList }) {
-    state.user.friendList = friendList;
+    state.friend.friendList = friendList;
   },
+  setFriendDetail(state, { friendDetail }) {
+    state.friend.detail = friendDetail;
+  },
+  addApplyFriend(state, { applyFriend }) {
+    state.friend.applyFriend.push(applyFriend);
+  }
 }

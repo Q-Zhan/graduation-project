@@ -8,9 +8,19 @@ function check(str) {
 }
 
 module.exports = function tokenVerify(req, res, next) {
-  const authType = ['/user', 'socket', '.jpg', '.jpeg', '.png', '.gif'];
+  const ignoreAuthType = [ // 免校验
+    'user/create',
+    'user/verifyMail',
+    'user/modifyPassword',
+    'user/login',
+    'socket',
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif'
+  ];
   orginUrl = req.originalUrl;
-  if (authType.some(check)) {
+  if (ignoreAuthType.some(check)) {
     next();
   } else {
     const token = req.headers["authorization"];

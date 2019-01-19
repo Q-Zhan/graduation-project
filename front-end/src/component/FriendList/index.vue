@@ -1,8 +1,9 @@
 <template>
   <div id="friendList">
+    <div class="title">好友请求</div>
     <div class="title">群组</div>
     <div class="title">好友</div>
-    <div class="friend" v-for="(item, index) in friendList" :key="index">
+    <div class="friend" v-for="(item, index) in friendList" :key="index" @click="pushRouter(`/home/friend?index=${index}`)">
       <div class="friend_avatar">
         <img :src="item.avatar || defaultAvatar"/>
       </div>
@@ -17,12 +18,12 @@ import { RESPONCE_CODE } from '../../constant';
 export default {
   data() {
     return {
-      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
+      defaultAvatar: require('../../assets/defaultAvatar.png'),
     };
   },
   computed: {
     friendList() {
-      return this.$store.state.user.friendList;
+      return this.$store.state.friend.friendList;
     }
   },
   mounted() {
@@ -44,6 +45,9 @@ export default {
             this.$message.error('服务出错，请稍后重试');
         }
       })
+    },
+    pushRouter(path) {
+      this.$router.push(path);
     }
   }
 };
@@ -74,7 +78,6 @@ export default {
     }
     .friend_name {
       font-weight: 400;
-      font-family: Helvetica Neue,Helvetica,Hiragino Sans GB,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,Arial,sans-serif;
       margin-left: 10px;
       color: white;
       line-height: 30px;

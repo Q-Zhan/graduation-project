@@ -2,6 +2,18 @@
 ## code规范
 0: 成功，-1: 错误, -2: 数据库主键重复, 401: token未认证
 
+## socket模块
+- 收到好友请求
+  - type: applyFriend
+  - argument:
+      object, (申请者的信息对象)
+
+- 发出的好友请求的被处理结果
+  - type: applyFriendResult
+  - argument:
+      object, (处理者的信息对象)
+      action, (0: 被拒绝, 1: 被接受)
+
 ## user模块
 - 用户注册
   - url: /user/create
@@ -77,12 +89,13 @@
       ]
     }
 
-- 同意他人的好友请求
-  - url: /friend/accept
+- 处理好友请求
+  - url: /friend/handleApply
   - method: post
   - auth: true
   - argument:  
-      userId
+      userId,
+      action, (0: 拒绝, 1:接受)
   - response: 无
 
 

@@ -32,6 +32,7 @@ body {
   background: url('./assets/bg.jpg');
   background-size: cover;
   -webkit-font-smoothing: antialiased;
+  font-family: Helvetica Neue,Helvetica,Hiragino Sans GB,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,Arial,sans-serif;
 }
 #app {
   height: 100%;

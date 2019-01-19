@@ -1,15 +1,18 @@
 <template>
   <div id="friendDetail">
     <div class="title">详细信息</div>
-    <div class="friend">
-      <div class="avatar"><img :src="defaultAvatar"/></div>
+    <div class="friend" v-show="queryIndex">
+      <div class="avatar"><img :src="friend.avatar || defaultAvatar"/></div>
       <div class="name">
-        <span>Another</span>
-        <i></i>
+        <span>{{ friend.name }}</span>
+        <i :class="formatGender(friend.gender)"></i>
       </div>
-      <div class="sign">水流东去归大海 日转西向恩故人</div>
-      <div class="area">地区： 广东</div>
+      <div class="sign">{{ friend.sign }}</div>
+      <div class="area">地区： {{ friend.area }}</div>
       <div class="button">发消息</div>
+    </div>
+    <div class="default" v-show="!queryIndex">
+      <img :src="defaultAvatar"/>
     </div>
   </div>
 </template>
@@ -20,19 +23,37 @@
 export default {
   data () {
     return {
-      defaultAvatar: require('../../assets/defaultAvatar.jpeg'),
+      defaultAvatar: require('../../assets/defaultAvatar.png'),
     }
   },
   computed: {
+    friend() {
+      if (!this.queryIndex) {
+        return {};
+      }
+      const friendList = this.$store.state.friend.friendList;
+      return friendList[this.queryIndex];
+    },
     token() {
       return this.$store.state.user.token;
+    },
+    queryIndex() {
+      return this.$route.query.index;
     }
   },
   mounted() {
 
   },
   methods: {
-
+    formatGender(gender) {
+      if (gender === 0) {
+        return 'women';
+      } else if (gender === 1) {
+        return 'men';
+      } else {
+        return 'hidden';
+      }
+    }
   }
 }
 </script>
@@ -49,6 +70,15 @@ export default {
     text-align: center;
     font-size: 14px;
   }
+  .default {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    margin-top: 50px;
+    img {
+      border-radius: 4px;
+    }
+  }
   .friend {
     .avatar {
       margin: 0 auto;
@@ -63,11 +93,29 @@ export default {
       width: 100%;
       display: flex;
       justify-content: center;
+      align-items: center;
       margin-top: 22px;
       span {
         font-size: 24px;
         height: 38px;
         margin-bottom: 10px;
+      }
+      i {
+        width: 16px;
+        height: 16px;
+        margin-left: 4px;
+        background: url('../../assets/icons.png') no-repeat;
+      }
+      .hidden {
+        display: none;
+      }
+      .men {
+        background-position: -384px -304px;
+        background-size: 487px 462px;
+      }
+      .women {
+        background-position: -368px -304px;
+        background-size: 487px 462px;
       }
     }
     .sign {

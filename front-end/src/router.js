@@ -84,27 +84,6 @@ let router = new Router({
             listTabs: 'friend', // 用于列表切换
           }
         }
-        // { 
-        //   path: 'moment', 
-        //   components: {
-        //     list: MomentList,
-        //     detail: MomentDetail
-        //   } 
-        // },
-        // { 
-        //   path: 'friend', 
-        //   components: {
-        //     list: FriendList,
-        //     detail: FriendDetail
-        //   } 
-        // },
-        // { 
-        //   path: 'addFriend', 
-        //   components: {
-        //     list: FriendList,
-        //     detail: AddFriend
-        //   } 
-        // },
       ]
     },
 
