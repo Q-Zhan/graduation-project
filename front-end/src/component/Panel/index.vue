@@ -34,7 +34,9 @@
         <div class="red_dot" v-show="applyFriend.length"></div>
       </div>
     </div>
-    <router-view name="list" class="list_view"></router-view>
+    <keep-alive>
+      <router-view name="list" class="list_view"></router-view>
+    </keep-alive>
   </div>
 </template>
 

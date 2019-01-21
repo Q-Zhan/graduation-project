@@ -16,6 +16,11 @@
 import Panel from '../Panel';
 import io from 'socket.io-client';
 
+const ACTION_TYPE = {
+  ACCEPT: 1,
+  REFUSE: 0
+}
+
 export default {
   components: {
     Panel,
@@ -38,9 +43,8 @@ export default {
   methods: {
     // 这里做一些全局事件的监听
     initSocketEvent(socket) {
-      // 接受他人的好友请求
+      // 他人的好友请求
       socket.on('applyFriend', (data) => {
-        console.log(data)
         this.$store.commit('addApplyFriend', { applyFriend: data })
         this.$notify({
           title: '提示',
@@ -49,8 +53,16 @@ export default {
         });
       });
       // 发出的好友请求被处理
-      socket.on('applyFriendResult', data => {
-        // console.log
+      socket.on('applyFriendResult', (item, action) => {
+        const message = `"${item.name}" 已${action == ACTION_TYPE.ACCEPT ? '接受' : '拒绝'}您的好友请求`;
+        if (action == ACTION_TYPE.ACCEPT) {
+          this.$store.commit('addFriend', { friend: item });
+        }
+        this.$notify({
+          title: '提示',
+          message,
+          duration: 3000
+        });
       })
     }
   }

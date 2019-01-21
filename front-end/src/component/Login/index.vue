@@ -64,8 +64,9 @@ export default {
             break;
           case RESPONCE_CODE.success:
             this.$message.success('登录成功');
-            this.$store.commit('setToken', {token: data.token});
-            this.$store.commit('setUserInfo', {info: data.userInfo});
+            this.$store.commit('setToken', { token: data.token });
+            this.$store.commit('setUserInfo', { info: data.userInfo });
+            this.$store.commit('setApplyFriend', { applyFriend: data.applyFriend });
             this.$router.push('/home');
             break;
         }

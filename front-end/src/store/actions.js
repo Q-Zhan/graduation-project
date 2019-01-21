@@ -3,7 +3,9 @@ import { API, RESPONCE_CODE } from '../constant'
 import 'whatwg-fetch'
 
 export default {
-  // user模块
+  /*
+    user模块
+  */
   register({ commit, state}, { account, password, mail}) {
     return fetch(API + 'user/create', {
       method: 'post',
@@ -56,20 +58,16 @@ export default {
       body: `account=${account}&password=${password}`
     })
     .then(res => res.json())
-    .then(data => {
-      if (data.code == RESPONCE_CODE.success) {
-        commit('setToken', {token: data.token});
-        commit('setUserInfo', {info: data.userInfo});
-      }
-      return data;
-    })
     .catch(err => {
       console.error(err)
       return {code: RESPONCE_CODE.error};
     })
   },
 
-  // friend模块
+
+  /*
+    friend模块
+  */
   searchUser({ commit, state}, { id }) {
     return fetch(API + `friend/searchUser?userId=${id}`, {
       method: 'get',
@@ -104,6 +102,21 @@ export default {
       headers: {
         authorization: state.user.token
       }
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  handleApply({ commit, state}, { id, action }) {
+    return fetch(API + `friend/handleApply`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${id}&action=${action}`
     })
     .then(res => res.json())
     .catch(err => {

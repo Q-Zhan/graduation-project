@@ -48,7 +48,8 @@
   - response: 
     {
       token: '...',
-      userInfo: {}
+      userInfo: {},
+      applyFriend: [], (未处理的好友请求列表)
     }
 
 ## friend模块

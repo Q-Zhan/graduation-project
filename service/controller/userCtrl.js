@@ -79,20 +79,27 @@ async function modifyPassword(req, res) {
 
 async function login(req, res) {
   let { account, password } = req.body;
-  let sql = `select * from user_info natural join social_info where userID=${account}`;
   try {
+    let sql = `select * from user_info natural join social_info where userID=${account}`;
     const result = await query(sql);
     if (result && result.length > 0 && result[0].password == password) {
+      // 生成token
       const token = jwt.sign({
         account,
         password
       }, JWT_SECRET, {
         expiresIn: '24h' // 过期时间，单位s
       });
+      
+      // 返回未处理好友请求
+      let applyFriendSql = `select * from social_info where userID in (select fromID from friend_apply where toID=${account})`;
+      const applyFriendResult = await query(applyFriendSql);
+
       res.json({
         code: CODE.success,
         token: token,
-        userInfo: result[0]
+        userInfo: result[0],
+        applyFriend: applyFriendResult
       });
     } else {
       res.json({

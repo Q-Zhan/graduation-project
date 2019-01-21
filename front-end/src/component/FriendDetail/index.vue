@@ -9,8 +9,10 @@
       </div>
       <div class="sign">{{ friend.sign }}</div>
       <div class="area">地区： {{ friend.area }}</div>
-      <div class="button">发消息</div>
+      <div class="button send">发消息</div>
+      <div class="button delete">删除好友</div>
     </div>
+
     <div class="default" v-show="!queryIndex">
       <img :src="defaultAvatar"/>
     </div>
@@ -133,16 +135,22 @@ export default {
     }
     .button {
       margin: 0 auto;
-      margin-top: 40px;
       width: 200px;
       height: 40px;
       text-align: center;
       cursor: pointer;
       line-height: 40px;
       color: white;
-      background-color: #42ac3e;
       border-radius: 4px;
       font-size: 14px;
+    }
+    .send {
+      margin-top: 40px;
+      background-color: #42ac3e;
+    }
+    .delete {
+      margin-top: 12px;
+      background-color: rgb(239, 84, 89);
     }
   }
 }

@@ -5,6 +5,10 @@ const GLOBAL_CONSTANT = require('../constant/global');
 const socket = require('../util/socket');
 
 const REPEAT_ERROR = 'ER_DUP_ENTRY';
+const ACTION_TYPE = {
+  ACCEPT: 1,
+  REFUSE: 0
+}
 
 async function searchUser(req, res) {
   let { userId } = req.query;
@@ -69,7 +73,7 @@ async function getFriendList(req, res) {
 }
 
 async function handleApply(req, res) {
-  const uid = req.uid; // 被请求用户
+  const uid = req.uid;
   const { userId, action } = req.body;
   
   const map = socket.getUserToSocketMap()
@@ -78,10 +82,10 @@ async function handleApply(req, res) {
   try {
     let deleteSql = `delete from friend_apply where fromID=${userId} and toID=${uid}`;
     const deleteResult = await query(deleteSql);
-    if (action) {
+    if (action == ACTION_TYPE.ACCEPT) {
       // 接受
-      let insertSql = `insert into friend_ship(userID, friendID, timeStamp) values(${uid}, ${userId}, ${+new Date()});`;
-      insertSql += `insert into friend_ship(userID, friendID, timeStamp) values(${userId}, ${uid}, ${+new Date()})`;
+      let insertSql = `insert ignore into friend_ship(userID, friendID, timeStamp) values(${uid}, ${userId}, ${+new Date()});`;
+      insertSql += `insert ignore into friend_ship(userID, friendID, timeStamp) values(${userId}, ${uid}, ${+new Date()})`;
       const insertResult = await query(insertSql);
     } 
     if (userIdSocket) {
