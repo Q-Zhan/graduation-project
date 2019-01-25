@@ -27,8 +27,8 @@ function init(app) {
     })
 
     // 监听socket
-    http.listen(8082);
-    console.log('监听socket端口：8082')
+    http.listen(8889);
+    console.log('监听socket端口：8889')
 }
 
 function getSocketIo() {

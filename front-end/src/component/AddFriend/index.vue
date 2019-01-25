@@ -55,6 +55,9 @@ export default {
             break;
           case RESPONCE_CODE.success:
             this.userList = data.users;
+            if (data.users.length == 0) {
+              this.$message.success('暂无匹配用户');
+            }
             break;
           default:
             this.$message.error('服务出错，请稍后重试');

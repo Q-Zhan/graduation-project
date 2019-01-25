@@ -12,7 +12,11 @@ const ACTION_TYPE = {
 
 async function searchUser(req, res) {
   let { userId } = req.query;
-  let sql = `select * from social_info where userID like '%${userId}%'`;
+  const uid = req.uid;
+  let sql = `select * from social_info where
+             userID like '%${userId}%'
+             and userID <> ${uid}
+             and userID not in (select friendID from friend_ship where userID=${uid})`;
   try {
     const result = await query(sql);
     res.json({
@@ -106,10 +110,29 @@ async function handleApply(req, res) {
   }
 }
 
+async function deleteFriend(req, res) {
+  const uid = req.uid;
+  const { userId } = req.body;
+
+  try {
+    let deleteSql = `delete from friend_ship where (userID=${userId} and friendID=${uid}) or (userID=${uid} and friendID=${userId})`;
+    const deleteResult = await query(deleteSql);
+    res.json({
+      code: CODE.success
+    });
+  } catch(error) {
+    res.json({
+      code: CODE.error,
+      error
+    });
+  }
+}
+
 
 module.exports = {
     searchUser,
     addFriend,
     getFriendList,
-    handleApply
+    handleApply,
+    deleteFriend
 }

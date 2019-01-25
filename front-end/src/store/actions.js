@@ -124,4 +124,19 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  deleteFriend({ commit, state}, { id }) {
+    return fetch(API + `friend/deleteFriend`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${id}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
 }

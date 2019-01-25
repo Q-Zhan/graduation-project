@@ -99,6 +99,14 @@
       action, (0: 拒绝, 1:接受)
   - response: 无
 
+- 删除好友
+  - url: /friend/deleteFriend
+  - method: post
+  - auth: true
+  - argument:  
+      userId
+  - response: 无
+
 
 
     

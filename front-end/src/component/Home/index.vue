@@ -36,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    const socket = io(`http://localhost:8082?userId=${this.userInfo.userID}`);
+    const socket = io(`http://localhost:8889?userId=${this.userInfo.userID}`);
     this.$store.commit('setSocket', { socket });
     this.initSocketEvent(socket);
   },

@@ -8,5 +8,6 @@ router.get('/friend/searchUser' , friendCtrl.searchUser); // 根据用户id进�
 router.post('/friend/addFriend', friendCtrl.addFriend);
 router.get('/friend/list' , friendCtrl.getFriendList);
 router.post('/friend/handleApply', friendCtrl.handleApply);
+router.post('/friend/deleteFriend', friendCtrl.deleteFriend);
 
 module.exports = router;

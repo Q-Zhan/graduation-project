@@ -9,8 +9,8 @@
       </div>
       <div class="sign">{{ friend.sign }}</div>
       <div class="area">地区： {{ friend.area }}</div>
-      <div class="button send">发消息</div>
-      <div class="button delete">删除好友</div>
+      <div class="button send" @click="turnToChat(friend)">发消息</div>
+      <div class="button delete" @click="deleteFriend(friend.userID)">删除好友</div>
     </div>
 
     <div class="default" v-show="!queryIndex">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-
+import { RESPONCE_CODE } from '../../constant';
 
 export default {
   data () {
@@ -35,6 +35,9 @@ export default {
       }
       const friendList = this.$store.state.friend.friendList;
       return friendList[this.queryIndex];
+    },
+    chatList() {
+      return this.$store.state.chat.chatList;
     },
     token() {
       return this.$store.state.user.token;
@@ -55,6 +58,40 @@ export default {
       } else {
         return 'hidden';
       }
+    },
+    deleteFriend(id) {
+      this.$store.dispatch('deleteFriend', { id })
+      .then(data => {
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            this.$store.commit('delteFriend', { friendList: data.list });
+            this.$message.success('删除成功');
+            this.$router.push('/home/friend');
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
+      })
+    },
+    turnToChat(friend) {
+      let idx = -1;
+      this.chatList.forEach((item, index) => {
+        if (item.userID == friend.userID) {
+          idx = index;
+        }
+      })
+      if (idx == -1) {
+        // 若不存在于chatList中，则置入第一项
+        const friendItem = Object.assign(friend, { lastMsg: '' });
+        this.$store.commit('addChat', { friend: friendItem });
+        this.$router.push(`/home/chat?index=${0}`);
+      } else {
+        this.$router.push(`/home/chat?index=${idx}`);
+      }
     }
   }
 }
@@ -68,6 +105,7 @@ export default {
   .title {
     margin: 0 19px;
     padding: 10px 0;
+    line-height: 30px;
     border-bottom: 1px solid #d6d6d6;
     text-align: center;
     font-size: 14px;
