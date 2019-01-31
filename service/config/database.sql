@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.24)
 # Database: onlinechat
-# Generation Time: 2019-01-11 12:26:13 +0000
+# Generation Time: 2019-01-31 11:51:55 +0000
 # ************************************************************
 
 
@@ -32,17 +32,44 @@ CREATE TABLE `chatlist` (
 
 
 
-# Dump of table friend
+# Dump of table friend_apply
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `friend`;
+DROP TABLE IF EXISTS `friend_apply`;
 
-CREATE TABLE `friend` (
+CREATE TABLE `friend_apply` (
+  `fromID` char(100) NOT NULL DEFAULT '' COMMENT '请求者id',
+  `toID` char(100) NOT NULL DEFAULT '' COMMENT '被请求者id',
+  PRIMARY KEY (`fromID`,`toID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存放未被处理的好友请求，拒绝或接受动作都会删去该表的记录';
+
+
+
+# Dump of table friend_ship
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `friend_ship`;
+
+CREATE TABLE `friend_ship` (
   `userID` char(100) NOT NULL DEFAULT '' COMMENT '用户id',
   `friendID` char(100) NOT NULL DEFAULT '' COMMENT '好友id',
   `timeStamp` char(100) NOT NULL DEFAULT '' COMMENT '添加时间戳'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存放已接受的好友关系';
 
+LOCK TABLES `friend_ship` WRITE;
+/*!40000 ALTER TABLE `friend_ship` DISABLE KEYS */;
+
+INSERT INTO `friend_ship` (`userID`, `friendID`, `timeStamp`)
+VALUES
+	('11','23','1547991102237'),
+	('123','23','1547991102237'),
+	('111','22','1547991102237'),
+	('23','123','1547991102237'),
+	('123','111',''),
+	('111','123','');
+
+/*!40000 ALTER TABLE `friend_ship` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table group_info
@@ -115,17 +142,19 @@ CREATE TABLE `social_info` (
   `name` char(100) DEFAULT '默认昵称' COMMENT '昵称',
   `area` char(100) DEFAULT NULL COMMENT '地区',
   `sign` char(100) DEFAULT NULL COMMENT '自我简介',
-  `gender` int(11) DEFAULT NULL COMMENT '性别：0-女，1-男'
+  `gender` int(11) DEFAULT NULL COMMENT '性别：0-女，1-男',
+  `avatar` text COMMENT '头像'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `social_info` WRITE;
 /*!40000 ALTER TABLE `social_info` DISABLE KEYS */;
 
-INSERT INTO `social_info` (`userID`, `name`, `area`, `sign`, `gender`)
+INSERT INTO `social_info` (`userID`, `name`, `area`, `sign`, `gender`, `avatar`)
 VALUES
-	('123','默认昵称',NULL,NULL,NULL),
-	('111','默认昵称',NULL,NULL,NULL),
-	('33311','默认昵称',NULL,NULL,NULL);
+	('123','I am Z!','广州','我就是我，有个性',0,'http://localhost:8081/img/avatar.jpg'),
+	('111','我是小号','东莞',NULL,1,NULL),
+	('33311','默认昵称','深圳',NULL,0,NULL),
+	('1234','默认昵称',NULL,NULL,NULL,NULL);
 
 /*!40000 ALTER TABLE `social_info` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -163,6 +192,7 @@ INSERT INTO `user_info` (`userID`, `password`, `mail`)
 VALUES
 	('111','111','111'),
 	('123','123','123'),
+	('1234','1234','1234'),
 	('33311','33311','33331');
 
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
