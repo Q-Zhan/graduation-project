@@ -107,6 +107,16 @@
       userId
   - response: 无
 
+## chat模块
+- 一对一聊天
+  - url: /chat/private
+  - method: post
+  - auth: true
+  - argument:  
+      userId,
+      message
+  - response: 无
+
 
 
     
