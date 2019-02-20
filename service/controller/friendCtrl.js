@@ -9,6 +9,7 @@ const ACTION_TYPE = {
   ACCEPT: 1,
   REFUSE: 0
 }
+const { CHAT_TYPE, PRIVATE_MESSAGE_SUCCESS_TYPE} = GLOBAL_CONSTANT;
 
 async function searchUser(req, res) {
   let { userId } = req.query;
@@ -114,9 +115,16 @@ async function deleteFriend(req, res) {
   const uid = req.uid;
   const { userId } = req.body;
 
+  const map = socket.getUserToSocketMap()
+  const userIdSocket = map[userId];
   try {
-    let deleteSql = `delete from friend_ship where (userID=${userId} and friendID=${uid}) or (userID=${uid} and friendID=${userId})`;
+    let deleteSql = `delete from friend_ship where (userID=${userId} and friendID=${uid}) or (userID=${uid} and friendID=${userId});`;
+    deleteSql += `delete from chatlist where userID=${uid} and chatID=${userId} and chatType=${CHAT_TYPE.USER}`;
     const deleteResult = await query(deleteSql);
+    // if (userIdSocket) {
+    //   // 对方在线
+    //   userIdSocket.emit('deleteFriend', uid);
+    // }
     res.json({
       code: CODE.success
     });

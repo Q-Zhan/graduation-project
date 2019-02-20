@@ -33,6 +33,12 @@ export default {
   computed: {
     userInfo() {
       return this.$store.state.user.info;
+    },
+    friend() {
+      return this.$store.state.friend;
+    },
+    friendList() {
+      return this.friend.friendList;
     }
   },
   mounted() {
@@ -63,7 +69,25 @@ export default {
           message,
           duration: 3000
         });
+      });
+      // 接受私聊消息
+      socket.on('privateMessage', (userId, type, content) => {
+
       })
+
+
+      // 静默删除好友(被他人删好友)
+      // socket.on('deleteFriend', (userId) => {
+      //   console.log('deteleFriend socket: ' + userId)
+      //   const idx = this.friendList.findIndex((element, index) => {
+      //     return element.userID == userId;
+      //   });
+      //   if (idx != -1) {
+      //     this.$store.commit('deleteFriend', { index: idx})
+      //     this.$router.replace('/home/friend');
+      //   }
+        
+      // })
     }
   }
 }
@@ -76,7 +100,8 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  margin-left: -500px;
+  margin-top: -379px;
   overflow: hidden;
   .container {
     border-radius: 3px;

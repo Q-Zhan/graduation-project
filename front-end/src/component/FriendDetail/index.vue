@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { RESPONCE_CODE } from '../../constant';
+import { RESPONCE_CODE, CHAT_TYPE } from '../../constant';
 
 export default {
   data () {
@@ -44,6 +44,9 @@ export default {
     },
     queryIndex() {
       return this.$route.query.index;
+    },
+    chatListIndex() {
+      return this.$store.state.chat.chatListIndex;
     }
   },
   mounted() {
@@ -68,7 +71,22 @@ export default {
             this.$router.push('/login');
             break;
           case RESPONCE_CODE.success:
-            this.$store.commit('delteFriend', { friendList: data.list });
+            // 删除对应的chat
+            const friendId = this.friend.userID;
+            let idx = -1;
+            this.chatList.forEach((item, index) => {
+              if (item.userID == friendId) {
+                idx = index;
+              }
+            });
+            if (idx != -1) {
+              if (idx == this.chatListIndex) {
+                this.$store.commit('updateChatListIndex', {index: null})
+              }
+              this.$store.commit('deleteChat', { index: idx})
+            } 
+            // 删除好友
+            this.$store.commit('deleteFriend', { index: this.queryIndex });
             this.$message.success('删除成功');
             this.$router.push('/home/friend');
             break;
@@ -86,9 +104,16 @@ export default {
       })
       if (idx == -1) {
         // 若不存在于chatList中，则置入第一项
-        const friendItem = Object.assign(friend, { lastMsg: '' });
-        this.$store.commit('addChat', { friend: friendItem });
-        this.$router.push(`/home/chat?index=${0}`);
+        
+        this.$store.dispatch('addChat', { chatID: friend.userID, chatType: CHAT_TYPE.USER})
+        .then(data => {
+          const chatMsg = data.chatMsg;
+          const friendItem = Object.assign(friend, { chatMsg: chatMsg });
+          this.$store.commit('addChat', { friend: friendItem });
+          this.$store.commit('updateChatListIndex', {index: 0})
+          this.$router.push(`/home/chat`);
+        })
+        
       } else {
         this.$router.push(`/home/chat?index=${idx}`);
       }

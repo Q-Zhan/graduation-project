@@ -124,6 +124,10 @@ export default {
       ::-webkit-input-placeholder { color:#d6d6d6; }
       :-ms-input-placeholder { color:#d6d6d6; }
   }
+  .user_list {
+    height: 655px;
+    overflow-y: auto;
+  }
   .user {
     border-bottom: 1px solid #e6e3e3;
     height: 70px;

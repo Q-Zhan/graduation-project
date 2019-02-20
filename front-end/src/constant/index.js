@@ -7,3 +7,13 @@ export const RESPONCE_CODE = {
   unAuth: 401
 }
 
+export const MESSAGE_TYPE = {
+  TEXT: 0,
+  IMAGE: 1
+}
+
+export const CHAT_TYPE = {
+  USER: 0,
+  GROUP: 1
+}
+

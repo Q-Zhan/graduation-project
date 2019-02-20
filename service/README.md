@@ -14,6 +14,20 @@
       object, (处理者的信息对象)
       action, (0: 被拒绝, 1: 被接受)
 
+- 静默删除好友(被他人删好友)，!!！未实装
+  - type: deleteFriend
+  - argument:
+      userId,
+
+- 收到私聊消息
+  - type: privateMessage
+  - argument:
+      userId,
+      type,
+      content
+
+ 
+
 ## user模块
 - 用户注册
   - url: /user/create
@@ -106,17 +120,90 @@
   - argument:  
       userId
   - response: 无
+  
 
 ## chat模块
-- 一对一聊天
+- 获取最近聊天列表
+  - url: /chat/getChatList
+  - method: post
+  - auth: true
+  - argument: 无
+  - response: 
+    {
+      chatList: [
+        {
+          "userID":"111",
+          "name":"我是小号",
+          "area":"东莞",
+          "sign":null,
+          "gender":1,
+          "avatar":null,
+          "chatMsg": [
+            {"type":0,"from":"123","to":"111","content":"123"},
+            {"type":0,"from":"123","to":"111","content":"321"}
+          ]
+        },
+        {
+          "groupID": '11',
+          "name": '这是一群',
+          "groupMember": [
+            {
+              "userID":"111",
+              "name":"我是小号",
+              "area":"东莞",
+              "sign":null,
+              "gender":1,
+              "avatar":null,
+            }
+          ]
+          "chatMsg": [
+
+          ]
+        }
+        ...
+      ]
+    }
+
+- 发送私聊消息
   - url: /chat/private
   - method: post
   - auth: true
   - argument:  
       userId,
-      message
+      content,
+      type, (0: 纯文字, 1: 图片)
+  - response: 
+    {
+      isSuccess, (0: 好友被删发送失败， 1: 发送成功)
+    }
+    
+- 更新chat的时间戳，使之在查询结果中置顶
+  - url: /chat/topChat
+  - method: post
+  - auth: true
+  - argument:  
+      chatID,
   - response: 无
 
+- 添加最近聊天列表chat
+  - url: /chat/addChat
+  - method: post
+  - auth: true
+  - argument:  
+      chatID,
+      chatType, (0: 用户, 1: 群组)
+  - response: 
+    {
+      chatMsg, (和该chat的聊天记录)
+    }
+
+  - 删除最近聊天列表chat
+  - url: /chat/deleteChat
+  - method: post
+  - auth: true
+  - argument:  
+      chatID,
+  - response: 无
 
 
     

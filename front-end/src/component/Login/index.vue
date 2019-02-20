@@ -6,7 +6,7 @@
           <el-input v-model="userInfo.account"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="userInfo.password"></el-input>
+          <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
       </el-form>
       <div class="operation">

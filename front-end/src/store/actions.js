@@ -139,4 +139,82 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+
+  /*
+    chat模块
+  */
+  sendPrivateMessage({ commit, state}, { id, message, type }) {
+    return fetch(API + `chat/private`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `userId=${id}&content=${message}&type=${type}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  getChatList({ commit, state}, { }) {
+    return fetch(API + `chat/getChatList`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  addChat({ commit, state}, { chatID, chatType }) {
+    return fetch(API + `chat/addChat`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `chatID=${chatID}&chatType=${chatType}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  deleteChat({ commit, state}, { chatID }) {
+    return fetch(API + `chat/deleteChat`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `chatID=${chatID}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  topChat({ commit, state}, { chatID }) {
+    return fetch(API + `chat/topChat`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `chatID=${chatID}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
 }

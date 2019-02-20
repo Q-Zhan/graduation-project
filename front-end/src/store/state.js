@@ -9,6 +9,7 @@ export default {
   },
   chat: {
     chatList: [], // 聊天列表，需要与后端同步
+    chatListIndex: null 
   },
   socket: null
 }

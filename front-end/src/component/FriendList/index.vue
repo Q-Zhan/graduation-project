@@ -13,7 +13,7 @@
     <div class="title">群组</div>
 
     <div class="title">好友</div>
-    <div class="friend item" v-for="(item, index) in friendList" :key="index" @click="pushRouter(`/home/friend?index=${index}`)">
+    <div class="friend item" v-for="(item, index) in friendList" :key="item.userID" @click="pushRouter(`/home/friend?index=${index}`)">
       <div class="avatar">
         <img :src="item.avatar || defaultAvatar"/>
       </div>
@@ -120,12 +120,21 @@ export default {
       color: white;
       line-height: 30px;
       font-size: 13px;
+      width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      word-wrap: normal;
     }
   }
   .apply {
     cursor: auto;
     .name {
-      width: 120px;
+      width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      word-wrap: normal;
     }
     .button {
       width: 40px;
