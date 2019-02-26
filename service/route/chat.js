@@ -9,5 +9,7 @@ router.post('/chat/getChatList', chatCtrl.getChatList);
 router.post('/chat/addChat', chatCtrl.addChat);
 router.post('/chat/deleteChat', chatCtrl.deleteChat);
 router.post('/chat/topChat', chatCtrl.topChat);
+router.post('/chat/createGroup', chatCtrl.createGroup);
+router.post('/chat/getOfflineMessage', chatCtrl.getOfflineMessage);
 
 module.exports = router;

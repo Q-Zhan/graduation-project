@@ -10,7 +10,10 @@
     </div>
     <div class="chatList">
       <div v-for="(item, index) in chatList" :key="index" class="chat" @click="turnToChat(index)" @contextmenu="showContextMenu(index, $event)">
-        <div class="avatar"><img :src="item.avatar || defaultAvatar" /></div>
+        <div class="avatar">
+          <img :src="item.avatar || defaultAvatar" />
+          <div class="dot" v-show="item.unreadNum > 0">{{ item.unreadNum }}</div>
+        </div>
         <div class="name_msg">
           <div class="name">{{ item.name }}</div>
           <div class="msg">{{ getLastMsg(item.chatMsg)}}</div>
@@ -80,7 +83,8 @@ export default {
       })
     },
     turnToChat(index) {
-      this.$store.commit('updateChatListIndex', {index: index})
+      this.$store.commit('setChatUnread', { index})
+      this.$store.commit('updateChatListIndex', {index})
     },
     getLastMsg(chatMsg) {
       if (chatMsg.length > 0) {
@@ -110,8 +114,9 @@ export default {
             break;
           case RESPONCE_CODE.success:
             if (index == this.chatListIndex) {
-              // this.$router.push(`/home/chat`);
               this.$store.commit('updateChatListIndex', {index: null})
+            } else if (index < this.chatListIndex) {
+              this.$store.commit('updateChatListIndex', { index: this.chatListIndex - 1})
             }
             this.$store.commit('deleteChat', { index });
             break;
@@ -157,7 +162,7 @@ export default {
     font-size: 14px;
     background-color: #292d32;
     color: #787b87;
-    padding: 1px 18px;
+    padding: 2px 18px;
     overflow: hidden;
     position: relative;
     cursor: pointer;
@@ -195,7 +200,20 @@ export default {
       width: 40px;
       height: 40px;
       border-radius: 2px;
-      overflow: hidden;
+      position: relative;
+      .dot {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: rgb(236, 85, 85);
+        top: -6px;
+        right: -6px;
+        text-align: center;
+        line-height: 16px;
+        font-size: 12px;
+        color: white;
+      }
     }
     .name_msg {
       margin-left: 10px;

@@ -15,6 +15,7 @@
 <script>
 import Panel from '../Panel';
 import io from 'socket.io-client';
+import { RESPONCE_CODE, CHAT_TYPE } from '../../constant';
 
 const ACTION_TYPE = {
   ACCEPT: 1,
@@ -39,14 +40,46 @@ export default {
     },
     friendList() {
       return this.friend.friendList;
+    },
+    chatList() {
+      return this.$store.state.chat.chatList;
+    },
+    chat() {
+      if (this.chatListIndex == null) {
+        return {};
+      }
+      return this.$store.state.chat.chatList[this.chatListIndex]
+    },
+    chatMsg() {
+      return this.chat.chatMsg || [];
+    },
+    chatListIndex() {
+      return this.$store.state.chat.chatListIndex;
     }
   },
   mounted() {
     const socket = io(`http://localhost:8889?userId=${this.userInfo.userID}`);
     this.$store.commit('setSocket', { socket });
     this.initSocketEvent(socket);
+    this.getFriendList();
   },
   methods: {
+    getFriendList() {
+      this.$store.dispatch('getFriendList', {})
+      .then(data => {
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            this.$store.commit('setFriendList', { friendList: data.list });
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
+      })
+    },
     // 这里做一些全局事件的监听
     initSocketEvent(socket) {
       // 他人的好友请求
@@ -72,7 +105,61 @@ export default {
       });
       // 接受私聊消息
       socket.on('privateMessage', (userId, type, content) => {
+        const nowUserId = this.chat.userID;
+        const idx = this.chatList.findIndex((element, index) => {
+          return element.userID == userId;
+        });
+        if (idx == -1) {
+          // chatList未存在该好友
+          this.$store.dispatch('addChat', { chatID: userId, chatType: CHAT_TYPE.USER})
+          .then(data => {
+            const chatMsg = data.chatMsg;
+            const friendList = this.friendList;
+            const friendIndex = this.friendList.findIndex((element, index) => {
+              return element.userID == userId;
+            });
+            const friendItem = this.friendList[friendIndex];
+            friendItem.chatMsg = chatMsg;
+            this.$store.commit('addChat', { friend: friendItem });
+            // 添加未读
+            this.$store.commit('addChatUnread', { index: 0 });
+            // 保持当前聊天chatListIndex对应的chat不变
+            if (this.chatListIndex != null) {
+              const nowChatIndex = this.chatList.findIndex((element, index) => {
+                return element.userID == nowUserId;
+              });
+              this.$store.commit('updateChatListIndex', { index: nowChatIndex});
+            }
+          })
+        } else {
+          // 已存在
+          // 添加未读
+          console.log(idx)
+          if (nowUserId != userId) {
+            this.$store.commit('addChatUnread', { index: idx});
+          }
 
+          // 更新消息，将其置顶
+          this.$store.commit('addChatMessage', {
+            index: idx,
+            item: {type, fromID: userId, toID: this.userInfo.userID, content}
+          });
+          this.$store.dispatch('topChat', { chatID: userId});
+          this.$store.commit('topChat', { index: idx});
+          
+          // 保持当前聊天chatListIndex对应的chat不变
+          if (this.chatListIndex != null) {
+            const nowChatIndex = this.chatList.findIndex((element, index) => {
+              return element.userID == nowUserId;
+            });
+            this.$store.commit('updateChatListIndex', { index: nowChatIndex});
+          }
+       
+        }
+
+        
+
+        
       })
 
 

@@ -47,6 +47,9 @@ export default {
     },
     chatListIndex() {
       return this.$store.state.chat.chatListIndex;
+    },
+    isSelectingGroup() {
+      return this.$store.state.friend.isSelectingGroup;
     }
   },
   mounted() {
@@ -63,6 +66,10 @@ export default {
       }
     },
     deleteFriend(id) {
+      if (this.isSelectingGroup) {
+        this.$message.info('请先选择发起群聊对象');
+        return;
+      }
       this.$store.dispatch('deleteFriend', { id })
       .then(data => {
         switch(data.code) {

@@ -36,6 +36,9 @@ export default {
     arr.splice(index, 1);
     state.friend.applyFriend = arr;
   },
+  setIsSelectingGroup(state, { status }) {
+    state.friend.isSelectingGroup = status;
+  },
 
   // chat
   setChatList(state, { chatList }) {
@@ -52,6 +55,14 @@ export default {
     Vue.set(friendItem, 'chatMsg', friend.chatMsg);
     state.chat.chatList.unshift(friendItem);
   },
+  addChatUnread(state, { index }) {
+    const chat = state.chat.chatList[index];
+    chat.unreadNum = chat.unreadNum ? chat.unreadNum + 1 : 1;
+  },
+  setChatUnread(state, { index }) {
+    const chat = state.chat.chatList[index];
+    chat.unreadNum = 0;
+  },
   updateChatListIndex(state, { index }) {
     state.chat.chatListIndex = index;
   },
@@ -61,5 +72,8 @@ export default {
   addChatMessage(state, { index, item}) {
     state.chat.chatList[index].chatMsg.push(item);
   },
+  setScrollHeight(state, { value, index }) {
+    state.chat.chatList[index].scrollHeight = value;
+  }
 
 }

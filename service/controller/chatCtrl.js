@@ -23,7 +23,7 @@ async function sendPrivateMessage(req, res) {
 
       if (userIdSocket) {
         // 对方在线
-        userIdSocket.emit('privateMessage', userId, type, content);
+        userIdSocket.emit('privateMessage', uid, type, content);
       } else {
         // 对方离线
         let selectOfflineSql = `select * from offline_message where toId=${userId} and fromId=${uid}`;
@@ -163,10 +163,91 @@ async function topChat(req, res) {
   }
 }
 
+async function createGroup(req, res) {
+  const uid = req.uid;
+  const member = req.body;
+  const map = socket.getUserToSocketMap();
+  try {
+    let groupName = ''; // 群初始名字
+    member.forEach((item) => {
+      groupName += `${item.name}、`;
+    });
+    // 插入group_info
+    groupName = groupName.slice(0, groupName.length - 1); // 去掉最后一个顿号
+    const insertGroupInfoSql = `insert into group_info values(null, '${groupName}')`;
+    const insertGroupInfoResult = await query(insertGroupInfoSql);
+    const groupId = insertGroupInfoResult.insertId;
+    // 插入user_group
+    let insertUserGroupSql = `insert into user_group values`;
+    member.forEach((item) => {
+      insertUserGroupSql += `(${item.userID}, ${groupId}, ${+new Date()}),`;
+    });
+    insertUserGroupSql = insertUserGroupSql.slice(0, insertUserGroupSql.length - 1);
+    const insertUserGroupResult = await query(insertUserGroupSql);
+
+    member.forEach(item => {
+      const userId = item.userID;
+      const userIdSocket = map[userId];
+      if (userIdSocket) {
+        // 对方在线
+        // userIdSocket.emit('privateMessage', uid, type, content);
+      } else {
+
+      }
+    })
+
+    res.json({
+      code: CODE.success,
+    })
+  } catch(error) {
+    res.json({
+      code: CODE.error,
+      error
+    });
+  }
+}
+
+async function getOfflineMessage(req, res) {
+  const uid = req.uid;
+  try {
+    const selectOfflineSql = `select * from offline_message where toId=${uid}`;
+    const selectOfflineResult = await query(selectOfflineSql);
+    let result = [];
+
+    // 补充chatMsg
+    for (let i = 0; i < selectOfflineResult.length; i++) {
+      const item = selectOfflineResult[i];
+      if (item.chatType == CHAT_TYPE.USER) {
+        // 私聊消息
+        const userID = item.fromId;
+        const selectPrivateMessageSql = `select * from private_message where (toID=${uid} and fromID=${userID}) or (toID=${userID} and fromID=${uid})`
+        const selectPrivateMessageResult = await query(selectPrivateMessageSql);
+        item.chatMsg = selectPrivateMessageResult;
+        result.push(item);
+      } else if (item.chatType == CHAT_TYPE.GROUP) {
+        // 群聊消息
+      }
+    }
+
+    res.json({
+      code: CODE.success,
+      result
+    })
+  } catch(error) {
+    res.json({
+      code: CODE.error,
+      error
+    });
+  }
+}
+
+
 module.exports = {
   sendPrivateMessage,
   getChatList,
   addChat,
   deleteChat,
-  topChat
+  topChat,
+  createGroup,
+  getOfflineMessage
 }

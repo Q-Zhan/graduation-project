@@ -3,7 +3,7 @@
     <div class="chat_room" v-show="(chatListIndex != null)">
       <div class="title">{{chat.name}}</div>
       <!-- 聊天内容 -->
-      <div class="content" id="content" ref="content">
+      <div class="content" id="content" ref="content" @scroll="handleContentScroll">
         <div v-for="(item, index) in chatMsg" :key="index">
           <div :class="[item.toID==userInfo.userID ? 'flex_left' : 'flex_right', 'msg_wrap']">
             <div class="avatar"><img :src="getMsgAvatar(item)"/></div>
@@ -69,8 +69,6 @@ export default {
       return this.$store.state.chat.chatList[this.chatListIndex]
     },
     chatMsg() {
-      // console.log(this.chat)
-      // console.log(this.chatMsg)
       return this.chat.chatMsg || [];
     },
     chatListIndex() {
@@ -82,16 +80,24 @@ export default {
   },
   watch: {
     chatListIndex(newValue, oldValue) {
-      this.scrollToBottom();
+      this.scrollToOldPosition();
     },
     chatMsg(newValue, oldValue) {
-      this.scrollToBottom();
+      this.scrollToOldPosition();
     }
   },
   mounted() {
-    this.scrollToBottom()
+    this.scrollToOldPosition(true)
   },
   methods: {
+    handleContentScroll(e) {
+      const contentElement = this.$refs.content;
+      const scrollHeight = contentElement.scrollTop;
+      this.$store.commit('setScrollHeight', {
+        value: scrollHeight,
+        index: this.chatListIndex
+      })
+    },
     sendImg(e) {
       let imgFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)/i;
       const file = e.target.files[0];
@@ -160,9 +166,6 @@ export default {
       } else {
         this.$message.error('请选择图片');
       }
-      
-      
-      
     },
     sendMsg() {
       let inputBoxValue = this.$refs.inputBox.value;
@@ -203,12 +206,21 @@ export default {
         }
       })
     },
-    scrollToBottom() {
+    scrollToOldPosition(toBottom) {
       if (this.chatListIndex != null) {
         // watch路由的query变化情况下，query已变而dom未更新完毕
         this.$nextTick(() => {
           const contentElement = this.$refs.content;
-          contentElement.scrollTop = contentElement.scrollHeight;
+          if (toBottom) {
+            contentElement.scrollTop = contentElement.scrollHeight;
+            this.$store.commit('setScrollHeight', {
+              value: contentElement.scrollHeight,
+              index: this.chatListIndex
+            })
+          } else {
+            const scrollHeight = this.chat.scrollHeight ? this.chat.scrollHeight : contentElement.scrollHeight;
+            contentElement.scrollTop = scrollHeight;
+          }
         })
       }
     },
@@ -263,8 +275,6 @@ export default {
     .msg_img {
       width: 100px;
       height: 100px;
-      margin-right: 10px;
-
     }
     .msg_content:after {
       content: ' ';
@@ -283,6 +293,9 @@ export default {
         left: -10px;
         border-right: 4px solid white;
       }
+      .msg_img {
+        margin-left: 10px;
+      }
     }
     .flex_right {
       flex-direction: row-reverse;
@@ -292,6 +305,9 @@ export default {
       .msg_content:after {
         right: -10px;
         border-left: 4px solid #b2e281;
+      }
+      .msg_img {
+        margin-right: 10px;
       }
     }
   }

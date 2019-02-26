@@ -23,7 +23,7 @@
   - type: privateMessage
   - argument:
       userId,
-      type,
+      type, (0: 纯文字, 1: 图片)
       content
 
  
@@ -197,13 +197,35 @@
       chatMsg, (和该chat的聊天记录)
     }
 
-  - 删除最近聊天列表chat
+- 删除最近聊天列表chat
   - url: /chat/deleteChat
   - method: post
   - auth: true
   - argument:  
       chatID,
   - response: 无
+
+- 新建群聊
+  - url: /chat/createGroup
+  - method: post
+  - auth: true
+  - argument:  
+      member: [ // 成员列表，userItem(包含自己)
+        {
+          avatar: ..,
+          name: ...,
+          ...
+        }
+      ], 
+  - response: 无
+
+- 拉取离线消息，并将离线消息清零
+  - url: /chat/getOfflineMessage
+  - method: post
+  - auth: true
+  - argument: 无
+  - response: 同getChatList
+
 
 
     

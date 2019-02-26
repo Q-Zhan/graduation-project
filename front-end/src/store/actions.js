@@ -217,4 +217,19 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  createGroup({ commit, state}, { member }) {
+    return fetch(API + `chat/createGroup`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(member)
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
 }
