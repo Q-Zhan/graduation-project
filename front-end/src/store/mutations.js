@@ -39,6 +39,16 @@ export default {
   setIsSelectingGroup(state, { status }) {
     state.friend.isSelectingGroup = status;
   },
+  addGroup(state, { groupId, groupName, member, chatMsg}) {
+    state.friend.groupList.push({ groupId, groupName, member, chatMsg});
+  },
+  setGroupList(state, { groupList}) {
+    state.friend.groupList = groupList;
+  },
+  deleteGroup(state, { index }) {
+    // 删除好友
+    state.friend.groupList.splice(index, 1);
+  },
 
   // chat
   setChatList(state, { chatList }) {
@@ -50,18 +60,19 @@ export default {
     state.chat.chatList.splice(index, 1);
     state.chat.chatList.unshift(item);
   },
-  addChat(state, { friend }) {
-    const friendItem = Object.assign({}, friend)
-    Vue.set(friendItem, 'chatMsg', friend.chatMsg);
-    state.chat.chatList.unshift(friendItem);
+  addChat(state, { item }) {
+    // user和group共用
+    const newItem = Object.assign({}, item)
+    Vue.set(newItem, 'chatMsg', item.chatMsg);
+    state.chat.chatList.unshift(newItem);
   },
   addChatUnread(state, { index }) {
     const chat = state.chat.chatList[index];
     chat.unreadNum = chat.unreadNum ? chat.unreadNum + 1 : 1;
   },
-  setChatUnread(state, { index }) {
+  setChatUnread(state, { index, value }) {
     const chat = state.chat.chatList[index];
-    chat.unreadNum = 0;
+    Vue.set(chat, 'unreadNum', value);
   },
   updateChatListIndex(state, { index }) {
     state.chat.chatListIndex = index;

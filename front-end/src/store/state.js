@@ -7,7 +7,7 @@ export default {
     applyFriend: [],  // 好友请求
     friendList: [], // 用户好友列表
     isSelectingGroup: false, // 是否正在发起群聊选择中
-    
+    groupList: [], // 群组列表
   },
   chat: {
     chatList: [ // 聊天列表，需要与后端同步
@@ -20,7 +20,8 @@ export default {
       //   "avatar": "http://localhost:8081/img/avatar.jpg", 
       //   "chatMsg": [],
       //   "scrollHeight": 100,
-      //   "unreadNum": 1
+      //   "unreadNum": 1,
+      //   "chatType": 0
       // }
     ], 
     chatListIndex: null

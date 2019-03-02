@@ -1,16 +1,30 @@
 <template>
   <div id="friendDetail">
     <div class="title">详细信息</div>
-    <div class="friend" v-show="queryIndex">
+    <div class="friend" v-if="queryIndex && queryType=='user'">
       <div class="avatar"><img :src="friend.avatar || defaultAvatar"/></div>
       <div class="name">
-        <span>{{ friend.name }}</span>
-        <i :class="formatGender(friend.gender)"></i>
+        <div>
+          {{ friend.name }}  
+        </div>
+        
       </div>
       <div class="sign">{{ friend.sign }}</div>
-      <div class="area">地区： {{ friend.area }}</div>
+      <div class="area">
+        <span v-if="friend.area">地区： {{ friend.area }}</span>
+        <i :class="formatGender(friend.gender)"></i> 
+      </div>
       <div class="button send" @click="turnToChat(friend)">发消息</div>
       <div class="button delete" @click="deleteFriend(friend.userID)">删除好友</div>
+    </div>
+
+    <div class="friend" v-if="queryIndex && queryType=='group'">
+      <div class="avatar"><img :src="defaultGroupAvatar"/></div>
+      <div class="name">
+        <div>群名：{{ group.groupName }}</div>
+      </div>
+      <div class="button send" @click="turnToChat(group)">发消息</div>
+      <div class="button delete" @click="deleteGroup(group.groupId)">删除群聊</div>
     </div>
 
     <div class="default" v-show="!queryIndex">
@@ -26,15 +40,23 @@ export default {
   data () {
     return {
       defaultAvatar: require('../../assets/defaultAvatar.png'),
+      defaultGroupAvatar: require('../../assets/group.png'),
     }
   },
   computed: {
     friend() {
-      if (!this.queryIndex) {
+      if (!this.queryIndex || this.queryType != 'user') {
         return {};
       }
       const friendList = this.$store.state.friend.friendList;
       return friendList[this.queryIndex];
+    },
+    group() {
+      if (!this.queryIndex || this.queryType != 'group') {
+        return {};
+      }
+      const groupList = this.$store.state.friend.groupList;
+      return groupList[this.queryIndex];
     },
     chatList() {
       return this.$store.state.chat.chatList;
@@ -44,6 +66,9 @@ export default {
     },
     queryIndex() {
       return this.$route.query.index;
+    },
+    queryType() {
+      return this.$route.query.type;
     },
     chatListIndex() {
       return this.$store.state.chat.chatListIndex;
@@ -64,6 +89,44 @@ export default {
       } else {
         return 'hidden';
       }
+    },
+    deleteGroup(groupId) {
+      if (this.isSelectingGroup) {
+        this.$message.info('请先选择发起群聊对象');
+        return;
+      }
+      this.$store.dispatch('deleteGroup', { groupId})
+      .then(data => {
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            // 删除对应的chat
+            const idx = this.chatList.findIndex(item => {
+              return item.groupId == groupId;
+            });
+            console.log(idx)
+            if (idx != -1) {
+              // 保持chatListIndex
+              if (idx == this.chatListIndex) {
+                this.$store.commit('updateChatListIndex', {index: null})
+              } else if (idx < this.chatListIndex) {
+                this.$store.commit('updateChatListIndex', {index: this.chatListIndex - 1})
+              }
+              this.$store.commit('deleteChat', { index: idx})
+            }
+            // 删除群组
+            
+            this.$store.commit('deleteGroup', { index: idx });
+            this.$message.success('删除成功');
+            this.$router.push('/home/friend');
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
+      })
     },
     deleteFriend(id) {
       if (this.isSelectingGroup) {
@@ -87,8 +150,11 @@ export default {
               }
             });
             if (idx != -1) {
+              // 保持chatListIndex
               if (idx == this.chatListIndex) {
                 this.$store.commit('updateChatListIndex', {index: null})
+              } else if (idx < this.chatListIndex) {
+                this.$store.commit('updateChatListIndex', {index: this.chatListIndex - 1})
               }
               this.$store.commit('deleteChat', { index: idx})
             } 
@@ -102,27 +168,29 @@ export default {
         }
       })
     },
-    turnToChat(friend) {
-      let idx = -1;
-      this.chatList.forEach((item, index) => {
-        if (item.userID == friend.userID) {
-          idx = index;
-        }
-      })
+    turnToChat(chat) {
+      if (this.isSelectingGroup) {
+        this.$message.info('请先选择发起群聊对象');
+        return;
+      }
+      const chatId = this.queryType == 'user' ? chat.userID : chat.groupId;
+      const chatType = this.queryType == 'user' ? CHAT_TYPE.USER : CHAT_TYPE.GROUP;
+      const idx = this.chatList.findIndex(element => {
+        return (this.queryType == 'user' && chatId == element.userID) || (this.queryType == 'group' && chatId == element.groupId)
+      });
       if (idx == -1) {
         // 若不存在于chatList中，则置入第一项
-        
-        this.$store.dispatch('addChat', { chatID: friend.userID, chatType: CHAT_TYPE.USER})
+        this.$store.dispatch('addChat', { chatID: chatId, chatType })
         .then(data => {
           const chatMsg = data.chatMsg;
-          const friendItem = Object.assign(friend, { chatMsg: chatMsg });
-          this.$store.commit('addChat', { friend: friendItem });
+          const chatItem = Object.assign(chat, { chatMsg});
+          this.$store.commit('addChat', { item: chatItem});
           this.$store.commit('updateChatListIndex', {index: 0})
           this.$router.push(`/home/chat`);
         })
-        
       } else {
-        this.$router.push(`/home/chat?index=${idx}`);
+        this.$store.commit('updateChatListIndex', {index: idx})
+        this.$router.push(`/home/chat`);
       }
     }
   }
@@ -167,28 +235,19 @@ export default {
       justify-content: center;
       align-items: center;
       margin-top: 22px;
-      span {
+      div {
         font-size: 24px;
         height: 38px;
         margin-bottom: 10px;
+        width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: normal;
+        text-align: center;
+        position: relative;
       }
-      i {
-        width: 16px;
-        height: 16px;
-        margin-left: 4px;
-        background: url('../../assets/icons.png') no-repeat;
-      }
-      .hidden {
-        display: none;
-      }
-      .men {
-        background-position: -384px -304px;
-        background-size: 487px 462px;
-      }
-      .women {
-        background-position: -368px -304px;
-        background-size: 487px 462px;
-      }
+      
     }
     .sign {
       font-size: 14px;
@@ -202,6 +261,27 @@ export default {
       color: #888;
       width: 100%;
       text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      i {
+        width: 16px;
+        height: 16px;
+        margin-left: 10px;
+        margin-top: 1px;
+        background: url('../../assets/icons.png') no-repeat;
+      }
+      .hidden {
+        display: none;
+      }
+      .men {
+        background-position: -384px -304px;
+        background-size: 487px 462px;
+      }
+      .women {
+        background-position: -368px -304px;
+        background-size: 487px 462px;
+      }
     }
     .button {
       margin: 0 auto;

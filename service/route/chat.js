@@ -10,6 +10,7 @@ router.post('/chat/addChat', chatCtrl.addChat);
 router.post('/chat/deleteChat', chatCtrl.deleteChat);
 router.post('/chat/topChat', chatCtrl.topChat);
 router.post('/chat/createGroup', chatCtrl.createGroup);
-router.post('/chat/getOfflineMessage', chatCtrl.getOfflineMessage);
+router.get('/chat/getOfflineMessage', chatCtrl.getOfflineMessage);
+router.post('/chat/groupMessage', chatCtrl.sendGroupMessage);
 
 module.exports = router;

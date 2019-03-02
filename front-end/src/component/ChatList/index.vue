@@ -1,21 +1,17 @@
 <template>
   <div id="chatList">
     <div class="title">
-      <span>公共聊天室</span>
-      <div class="triangle up"></div>
-    </div>
-    <div class="title">
       <span>聊天</span>
-      <div class="triangle down"></div>
+      <!-- <div class="triangle down"></div> -->
     </div>
     <div class="chatList">
       <div v-for="(item, index) in chatList" :key="index" class="chat" @click="turnToChat(index)" @contextmenu="showContextMenu(index, $event)">
         <div class="avatar">
-          <img :src="item.avatar || defaultAvatar" />
+          <img :src="getChatAvatar(item)" />
           <div class="dot" v-show="item.unreadNum > 0">{{ item.unreadNum }}</div>
         </div>
         <div class="name_msg">
-          <div class="name">{{ item.name }}</div>
+          <div class="name">{{ item.name || item.groupName }}</div>
           <div class="msg">{{ getLastMsg(item.chatMsg)}}</div>
         </div>
       </div>
@@ -27,12 +23,13 @@
 </template>
 
 <script>
-import { RESPONCE_CODE, MESSAGE_TYPE } from '../../constant';
+import { RESPONCE_CODE, MESSAGE_TYPE, CHAT_TYPE } from '../../constant';
 
 export default {
   data() {
     return {
       defaultAvatar: require('../../assets/defaultAvatar.png'),
+      defaultGroupAvatar: require('../../assets/group.png'),
       contextMenuStyle: {
         top: '0px',
         left: '0px'
@@ -45,28 +42,96 @@ export default {
     token() {
       return this.$store.state.user.token;
     },
+    chat() {
+      if (this.chatListIndex == null) {
+        return {};
+      }
+      return this.$store.state.chat.chatList[this.chatListIndex]
+    },
     chatList() {
       return this.$store.state.chat.chatList;
     },
     chatListIndex() {
       return this.$store.state.chat.chatListIndex;
-    }
+    },
+    friendList() {
+      return this.$store.state.friend.friendList;
+    },
+    groupList() {
+      return this.$store.state.friend.groupList;
+    },
     // queryIndex() {
     //   return this.$route.query.index;
     // },
   },
   mounted() {
-    this.initChatList();
+    this.initChatList()
+    .then(data => {
+      this.initOfflineMessage();
+    })
     this.initContextMenuCancel();
   },
   methods: {
+    initOfflineMessage() {
+      this.$store.dispatch('getOfflineMessage', {})
+      .then(data => {
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            const offlineList = data.result;
+            offlineList.forEach(offlineItem => {
+              const chatType = offlineItem.chatType;
+              let idx = -1;
+              if (chatType == CHAT_TYPE.USER) {
+                idx = this.chatList.findIndex(element => {
+                  return element.userID == offlineItem.fromId;
+                });
+              } else {
+                idx = this.chatList.findIndex(element => {
+                  return element.groupId == offlineItem.fromId;
+                });
+              }
+
+              if (idx != -1) {
+                this.$store.commit('setChatUnread', { index: idx, value: offlineItem.messageNum });
+              } else {
+                // 添加chat
+                let chatItem;
+                if (chatType == CHAT_TYPE.USER) {
+                  // 在好友中找到相应信息去addChat
+                  const friendIndex = this.friendList.findIndex(element => {
+                    return element.userID == offlineItem.fromId;
+                  });
+                  chatItem = this.friendList[friendIndex];
+                  chatItem.chatMsg = offlineItem.chatMsg;
+                } else {
+                  // 在群组中找到相应信息
+                  const groupIndex = this.groupList.findIndex(element => {
+                    return element.groupId == offlineItem.fromId;
+                  });
+                  chatItem = this.groupList[groupIndex];
+                  chatItem.chatMsg = offlineItem.chatMsg;
+                }
+                this.$store.commit('addChat', { item: chatItem});
+                this.$store.commit('updateChatListIndex', {index: 0})
+              }
+            });
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
+      })
+    },
     initContextMenuCancel() {
-      window.onclick = () => {
+      window.addEventListener('click', () => {
         this.isContextMenuShow = false;
-      }
+      })
     },
     initChatList() {
-      this.$store.dispatch('getChatList', {})
+      return this.$store.dispatch('getChatList', {})
       .then(data => {
         switch(data.code) {
           case RESPONCE_CODE.unAuth:
@@ -80,11 +145,14 @@ export default {
           default:
             this.$message.error('服务出错，请稍后重试');
         }
+        return true;
       })
+      
     },
     turnToChat(index) {
-      this.$store.commit('setChatUnread', { index})
+      this.$store.commit('setChatUnread', { index, value: 0})
       this.$store.commit('updateChatListIndex', {index})
+      this.$forceUpdate()
     },
     getLastMsg(chatMsg) {
       if (chatMsg.length > 0) {
@@ -102,10 +170,10 @@ export default {
     },
     deleteChat() {
       const index = this.contentMenuSelected;
-      const id = this.chatList[index].userID;
-
-      
-      this.$store.dispatch('deleteChat', { chatID: id})
+      const chatItem = this.chatList[index];
+      const chatID = chatItem.userID ? chatItem.userID : chatItem.groupId;
+      const chatType = chatItem.userID ? CHAT_TYPE.USER : CHAT_TYPE.GROUP;
+      this.$store.dispatch('deleteChat', { chatID, chatType})
       .then(data => {
         switch(data.code) {
           case RESPONCE_CODE.unAuth:
@@ -135,6 +203,15 @@ export default {
         left: `${x}px`
       }
       e.preventDefault();
+    },
+    getChatAvatar(item) {
+      if (item.groupId) {
+        // 群组
+        return this.defaultGroupAvatar;
+      } else {
+        // 用户
+        return item.avatar || this.defaultAvatar;
+      }
     }
   }
 };
@@ -144,6 +221,9 @@ export default {
 #chatList {
   overflow: auto;
   position: relative;
+  ::-webkit-scrollbar {//滚动条的宽度
+    width: 0;
+  }
   .contextMenu {
     position: fixed;
     width: 90px;
@@ -201,6 +281,7 @@ export default {
       height: 40px;
       border-radius: 2px;
       position: relative;
+      background-color: rgb(240,240,240);
       .dot {
         position: absolute;
         width: 16px;

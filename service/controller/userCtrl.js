@@ -9,8 +9,8 @@ const JWT_SECRET = GLOBAL_CONSTANT.jwtSecret;
 
 async function register(req, res) {
   let { account, password, mail } = req.body;
-  let sql = `insert into user_info(userID, password, mail) values(${account}, ${password}, ${mail});`;
-  sql += `insert into social_info(userID) values(${account})`
+  let sql = `insert into user_info(userID, password, mail) values('${account}', '${password}', '${mail}');`;
+  sql += `insert into social_info(userID) values('${account}')`
   try {
     const result = await query(sql);
     res.json({
@@ -34,7 +34,7 @@ async function register(req, res) {
 
 async function verifyMail(req, res) {
   let { account, mail } = req.body;
-  let sql = `select * from user_info where userID=${account}`;
+  let sql = `select * from user_info where userID='${account}'`;
   try {
     const result = await query(sql);
     if (result && result.length > 0 && result[0].mail == mail) {
@@ -56,7 +56,7 @@ async function verifyMail(req, res) {
 
 async function modifyPassword(req, res) {
   let { account, password } = req.body;
-  let sql = `update user_info set password=${password} where userID=${account}`;
+  let sql = `update user_info set password='${password}' where userID='${account}'`;
 
   try {
     const result = await query(sql);
@@ -80,7 +80,7 @@ async function modifyPassword(req, res) {
 async function login(req, res) {
   let { account, password } = req.body;
   try {
-    let sql = `select * from user_info natural join social_info where userID=${account}`;
+    let sql = `select * from user_info natural join social_info where userID='${account}'`;
     const result = await query(sql);
     if (result && result.length > 0 && result[0].password == password) {
       // 生成token
@@ -92,7 +92,7 @@ async function login(req, res) {
       });
       
       // 返回未处理好友请求
-      let applyFriendSql = `select * from social_info where userID in (select fromID from friend_apply where toID=${account})`;
+      let applyFriendSql = `select * from social_info where userID in (select fromID from friend_apply where toID='${account}')`;
       const applyFriendResult = await query(applyFriendSql);
 
       res.json({

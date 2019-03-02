@@ -1,17 +1,31 @@
 <template>
   <div id="chatroom">
     <div class="chat_room" v-show="(chatListIndex != null)">
-      <div class="title">{{chat.name}}</div>
+      <div class="title">
+        <div class="title_name" @click="controlMemberList">
+          {{chat.name || chat.groupName}}
+        </div>
+        <div class="triangle" v-if="isGroup" @click="controlMemberList"></div>
+        <div class="member_list" v-if="isGroup && isMemberListShow">
+          <div class="member" v-for="(item, index) in member" :key="index">
+            <img :src="item.avatar || defaultAvatar" @click="showMemberPop(item, $event)"/>
+            <div class="member_name">{{item.name}}</div>
+          </div>
+        </div>
+      </div>
       <!-- 聊天内容 -->
       <div class="content" id="content" ref="content" @scroll="handleContentScroll">
         <div v-for="(item, index) in chatMsg" :key="index">
-          <div :class="[item.toID==userInfo.userID ? 'flex_left' : 'flex_right', 'msg_wrap']">
+          <div :class="[(item.fromID || item.fromId)==userInfo.userID ? 'flex_right' : 'flex_left', 'msg_wrap']">
             <div class="avatar"><img :src="getMsgAvatar(item)"/></div>
-            <div class="msg_content" v-if="item.type == MESSAGE_TYPE.TEXT">
-              <span>{{ item.content }}</span>
-            </div>
-            <div class="msg_img" v-if="item.type == MESSAGE_TYPE.IMAGE">
-              <img :src="decodeURIComponent(item.content)"/>
+            <div :class="['msg_content_warp', isGroup ? 'margin_top' : '']">
+              <div v-if="isGroup" class="msg_sender">{{getSenderName(item)}}</div>
+              <div class="msg_content" v-if="item.type == MESSAGE_TYPE.TEXT">
+                <span>{{ item.content }}</span>
+              </div>
+              <div class="msg_img" v-if="item.type == MESSAGE_TYPE.IMAGE">
+                <img :src="decodeURIComponent(item.content)"/>
+              </div>
             </div>
           </div>
         </div>
@@ -32,11 +46,14 @@
         </div>
       </div>
     </div>
-    
 
     <div class="default" v-if="chatListIndex == null">
       <img :src="defaultAvatar"/>
       <div class="text">未选择聊天</div>
+    </div>
+    <!-- memberList弹窗 -->
+    <div class="member_pop" :style="memberPopStyle" v-if="isMemberPopShow">
+
     </div>
   </div>
 </template>
@@ -48,7 +65,13 @@ export default {
   data () {
     return {
       defaultAvatar: require('../../assets/defaultAvatar.png'),
-      MESSAGE_TYPE: MESSAGE_TYPE
+      MESSAGE_TYPE: MESSAGE_TYPE,
+      isMemberListShow: false,
+      isMemberPopShow: false,
+      memberPopStyle: {
+        top: '0px',
+        left: '0px'
+      },
     }
   },
   computed: {
@@ -73,6 +96,12 @@ export default {
     },
     chatListIndex() {
       return this.$store.state.chat.chatListIndex;
+    },
+    isGroup() {
+      return this.chat.groupId; // 只有group才有groupId
+    },
+    member() {
+      return this.isGroup && this.chat.member;
     }
     // queryIndex() {
     //   return this.$route.query.index;
@@ -87,9 +116,25 @@ export default {
     }
   },
   mounted() {
-    this.scrollToOldPosition(true)
+    this.scrollToOldPosition(true);
+    this.initMemberPopCancel();
   },
   methods: {
+    showMemberPop(item, e) {
+      let x = e.clientX;
+      let y = e.clientY;
+      this.memberPopStyle = {
+        top: `${y}px`,
+        left: `${x}px`
+      }
+      this.isMemberPopShow = true;
+      e.stopPropagation();
+    },
+    initMemberPopCancel() {
+      window.addEventListener('click', () => {
+        this.isMemberPopShow = false;
+      })
+    },
     handleContentScroll(e) {
       const contentElement = this.$refs.content;
       const scrollHeight = contentElement.scrollTop;
@@ -97,6 +142,9 @@ export default {
         value: scrollHeight,
         index: this.chatListIndex
       })
+    },
+    controlMemberList() {
+      this.isMemberListShow = !this.isMemberListShow
     },
     sendImg(e) {
       let imgFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)/i;
@@ -174,37 +222,78 @@ export default {
         this.$refs.inputBox.value = '';
         return;
       }
-      this.$store.dispatch('sendPrivateMessage', { 
-        id: this.chat.userID,
-        message: message,
-        type: MESSAGE_TYPE.TEXT
-      })
-      .then(data => {
-        switch(data.code) {
-          case RESPONCE_CODE.unAuth:
-            this.$message.error('登录状态失效');
-            this.$router.push('/login');
-            break;
-          case RESPONCE_CODE.success:
-            const isSuccess = data.isSuccess;
-            if (isSuccess) {
-              this.$store.commit('addChatMessage', {
-                index: parseInt(this.chatListIndex),
-                item: {type: MESSAGE_TYPE.TEXT, fromID: this.userInfo.userID, toID: this.chat.userID, content: message}
-              });
-              // 发送成功后置顶
-              this.$store.dispatch('topChat', { chatID: this.chat.userID});
-              this.$store.commit('topChat', { index: parseInt(this.chatListIndex) });
-              this.$store.commit('updateChatListIndex', { index: 0 })
-            } else {
-              this.$message.error('您与对方已不是好友关系，请重新添加好友');
-            }
-            this.$refs.inputBox.value = '';
-            break;
-          default:
-            this.$message.error('服务出错，请稍后重试');
-        }
-      })
+      if (this.chat.userID) {
+        // 发送私聊
+        this.$store.dispatch('sendPrivateMessage', { 
+          id: this.chat.userID,
+          message: message,
+          type: MESSAGE_TYPE.TEXT
+        })
+        .then(data => {
+          switch(data.code) {
+            case RESPONCE_CODE.unAuth:
+              this.$message.error('登录状态失效');
+              this.$router.push('/login');
+              break;
+            case RESPONCE_CODE.success:
+              const isSuccess = data.isSuccess;
+              if (isSuccess) {
+                this.$store.commit('addChatMessage', {
+                  index: parseInt(this.chatListIndex),
+                  item: {type: MESSAGE_TYPE.TEXT, fromID: this.userInfo.userID, toID: this.chat.userID, content: message}
+                });
+                // 发送成功后置顶
+                this.$store.dispatch('topChat', { chatID: this.chat.userID});
+                this.$store.commit('topChat', { index: parseInt(this.chatListIndex) });
+                this.$store.commit('updateChatListIndex', { index: 0 })
+              } else {
+                this.$message.error('您与对方已不是好友关系，请重新添加好友');
+              }
+              this.$refs.inputBox.value = '';
+              break;
+            default:
+              this.$message.error('服务出错，请稍后重试');
+          }
+        })
+      } else {
+        // 发送群聊
+        this.$store.dispatch('sendGroupMessage', { 
+          groupId: this.chat.groupId,
+          message: message,
+          type: MESSAGE_TYPE.TEXT
+        })
+        .then(data => {
+          switch(data.code) {
+            case RESPONCE_CODE.unAuth:
+              this.$message.error('登录状态失效');
+              this.$router.push('/login');
+              break;
+            case RESPONCE_CODE.success:
+              const isSuccess = data.isSuccess;
+              if (isSuccess) {
+                this.$store.commit('addChatMessage', {
+                  index: parseInt(this.chatListIndex),
+                  item: { 
+                    content: message,
+                    fromId: this.userInfo.userID,
+                    groupID: this.chat.groupId,
+                    type: MESSAGE_TYPE.TEXT
+                  }
+                });
+                // 发送成功后置顶
+                this.$store.dispatch('topChat', { chatID: this.chat.groupId});
+                this.$store.commit('topChat', { index: parseInt(this.chatListIndex) });
+                this.$store.commit('updateChatListIndex', { index: 0 })
+              } else {
+                this.$message.error('您已被踢出该群聊');
+              }
+              this.$refs.inputBox.value = '';
+              break;
+            default:
+              this.$message.error('服务出错，请稍后重试');
+          }
+        })
+      }
     },
     scrollToOldPosition(toBottom) {
       if (this.chatListIndex != null) {
@@ -224,9 +313,33 @@ export default {
         })
       }
     },
-    getMsgAvatar(msgItem) {
-      let avatar = msgItem.toID==this.userInfo.userID ? this.chat.avatar : this.userInfo.avatar;
+    getMsgAvatar(item) {
+      const fromId = item.fromID || item.fromId;
+      let avatar;
+      if (this.chat.userID) {
+        // 用户
+        avatar = (fromId == this.userInfo.userID) ? this.userInfo.avatar : this.chat.avatar;
+      } else {
+        this.chat.member.forEach(element => {
+          if (element.userID == fromId) {
+            avatar = element.avatar;
+          }
+        });
+      }
       return (avatar || this.defaultAvatar);
+    },
+    getSenderName(item) {
+      if (this.chat.userID) {
+        return;
+      }
+      const fromId = item.fromID || item.fromId;
+      let name;
+      this.chat.member.forEach(element => {
+        if (element.userID == fromId) {
+          name = element.name;
+        }
+      });
+      return name;
     }
   }
 }
@@ -238,19 +351,80 @@ export default {
   height: 100%;
   background: #eee;
   overflow: hidden;
-
+  .member_pop {
+    position: fixed;
+    z-index: 199;
+    border-radius: 4px;
+    width: 220px;
+    height: 300px;
+    background-color: red;
+  }
   .title {
+    display: flex;
+    position: relative;
+    justify-content: center;
     margin: 0 19px;
     padding: 10px 0;
     line-height: 30px;
     border-bottom: 1px solid #d6d6d6;
     text-align: center;
     font-size: 14px;
+    .title_name {
+      position: relative;
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      word-wrap: normal;
+      cursor: pointer;
+    }
+    .triangle {
+      margin-left: 5px;
+      margin-top: 10px;
+      width: 10px;
+      height: 10px;
+      cursor: pointer;
+      background: url('../../assets/icons.png') no-repeat;
+      background-position: -477px -65px;
+      background-size: 487px 462px;
+    }
+    .member_list {
+      position: absolute;
+      z-index: 99;
+      left: 0;
+      top: 51px;
+      width: 660px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow-y: auto;
+      max-height: 250px;
+      padding: 10px 4px 8px 27px;
+      border-bottom: 1px solid #d6d6d6;
+      background-color: #eee;
+      .member {
+        margin-right: 25px;
+        margin-bottom: 10px;
+        img {
+          width: 55px;
+          height: 55px;
+        }
+        .member_name {
+          width: 55px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          word-wrap: normal;
+          text-align: center;
+        }
+       
+      }
+    }
   }
   .content {
     height: 525px;
     padding: 0 20px;
     overflow-y: auto;
+    
     .msg_wrap {
       display: flex;
       margin: 16px 0;
@@ -258,6 +432,12 @@ export default {
     .avatar {
       width: 40px;
       height: 40px;
+    }
+    .msg_content_warp {
+      position: relative;
+    }
+    .margin_top {
+      margin-top: 18px;
     }
     .msg_content {
       position: relative;
@@ -267,10 +447,21 @@ export default {
       word-wrap: break-word;
       word-break: break-all;
       font-size: 14px;
-      max-width: 500px;
+      max-width: 420px;
       border-radius: 3px;
       margin: 0 10px;
       line-height: 18px;
+    }
+    .msg_sender {
+      position: absolute;
+      top: -20px;
+      color: #989898;
+      font-size: 13px;
+      max-width: 420px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      word-wrap: normal;
     }
     .msg_img {
       width: 100px;
@@ -286,6 +477,10 @@ export default {
     }
     .flex_left {
       flex-direction: row;
+      .msg_sender {
+        left: 10px;
+        text-align: left;
+      }
       .msg_content {
         background-color: white;
       }
@@ -299,6 +494,10 @@ export default {
     }
     .flex_right {
       flex-direction: row-reverse;
+      .msg_sender {
+        right: 10px;
+        text-align: right;
+      }
       .msg_content {
         background-color: #b2e281;
       }

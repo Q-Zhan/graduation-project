@@ -11,6 +11,12 @@
     </div>
 
     <div class="title">群组</div>
+    <div class="item" v-for="(item, index) in groupList" :key="item.groupId" @click="pushRouter(`/home/friend?index=${index}&type=group`)">
+      <div class="avatar">
+        <img :src="defaultGroupAvatar"/>
+      </div>
+      <div class="name">{{ item.groupName }}</div>
+    </div>
 
     <div class="title">
       <span>好友</span>
@@ -19,7 +25,7 @@
         <div class="refuse group_button" @click="cancelCreateGroup">取消</div>
       </div>
     </div>
-    <div class="friend item" v-for="(item, index) in friendList" :key="item.userID" @click="pushRouter(`/home/friend?index=${index}`)">
+    <div class="friend item" v-for="(item, index) in friendList" :key="item.userID" @click="pushRouter(`/home/friend?index=${index}&type=user`)">
       <div class="avatar">
         <img :src="item.avatar || defaultAvatar"/>
       </div>
@@ -41,6 +47,7 @@ export default {
   data() {
     return {
       defaultAvatar: require('../../assets/defaultAvatar.png'),
+      defaultGroupAvatar: require('../../assets/group.png'),
       ACTION_TYPE,
       groupSelectedList: [], // 选中的index为true
     };
@@ -48,6 +55,9 @@ export default {
   computed: {
     friendList() {
       return this.$store.state.friend.friendList;
+    },
+    groupList() {
+      return this.$store.state.friend.groupList;
     },
     applyFriend() {
       return this.$store.state.friend.applyFriend;
@@ -113,7 +123,6 @@ export default {
           member.push(this.friendList[i]);
         }
       }
-      console.log(member)
       this.$store.dispatch('createGroup', { member })
       .then(data => {
         switch(data.code) {
@@ -122,7 +131,12 @@ export default {
             this.$router.push('/login');
             break;
           case RESPONCE_CODE.success:
-            console.log(data)
+            const groupItem = data.groupItem;
+            const { groupId, groupName, member, chatMsg } = groupItem;
+            // 取消选择
+            this.$store.commit('setIsSelectingGroup', { status: false});
+            // 添加group
+            // this.$store.commit('addGroup', {groupId, groupName, member, chatMsg});
             break;
           default:
             this.$message.error('服务出错，请稍后重试');
@@ -183,6 +197,7 @@ export default {
       height: 30px;
       border-radius: 2px;
       overflow: hidden;
+      background-color: rgb(240,240,240);
     }
     .name {
       font-weight: 400;

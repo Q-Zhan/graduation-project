@@ -7,5 +7,9 @@ module.exports = {
   PRIVATE_MESSAGE_SUCCESS_TYPE: {
     FAIL: 0,
     SUCCESS: 1
+  },
+  MESSAGE_TYPE: {
+    TEXT: 0,
+    IMAGE: 1
   }
 }

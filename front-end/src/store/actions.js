@@ -139,6 +139,35 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  deleteGroup({ commit, state}, { groupId }) {
+    return fetch(API + `friend/deleteGroup`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `groupId=${groupId}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  getGroupList({ commit, state}, { }) {
+    return fetch(API + `friend/getGroupList`, {
+      method: 'get',
+      headers: {
+        authorization: state.user.token
+      }
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  
 
   /*
     chat模块
@@ -151,6 +180,21 @@ export default {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: `userId=${id}&content=${message}&type=${type}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  sendGroupMessage({ commit, state}, { groupId, message, type }) {
+    return fetch(API + `chat/groupMessage`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `groupId=${groupId}&content=${message}&type=${type}`
     })
     .then(res => res.json())
     .catch(err => {
@@ -187,14 +231,14 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
-  deleteChat({ commit, state}, { chatID }) {
+  deleteChat({ commit, state}, { chatID, chatType }) {
     return fetch(API + `chat/deleteChat`, {
       method: 'post',
       headers: {
         authorization: state.user.token,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: `chatID=${chatID}`
+      body: `chatID=${chatID}&chatType=${chatType}`
     })
     .then(res => res.json())
     .catch(err => {
@@ -225,6 +269,19 @@ export default {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(member)
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  getOfflineMessage({ commit, state}, { }) {
+    return fetch(API + `chat/getOfflineMessage`, {
+      method: 'get',
+      headers: {
+        authorization: state.user.token
+      }
     })
     .then(res => res.json())
     .catch(err => {

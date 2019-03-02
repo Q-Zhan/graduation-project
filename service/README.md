@@ -14,17 +14,28 @@
       object, (处理者的信息对象)
       action, (0: 被拒绝, 1: 被接受)
 
-- 静默删除好友(被他人删好友)，!!！未实装
-  - type: deleteFriend
-  - argument:
-      userId,
-
 - 收到私聊消息
   - type: privateMessage
   - argument:
       userId,
       type, (0: 纯文字, 1: 图片)
       content
+
+- 收到群聊添加
+  - type: addGroup
+  - argument:
+      groupId,
+      groupName,
+      member,
+      chatMsg,
+
+- 收到群聊消息
+  - type: groupMessage
+  - argument:
+      groupId,
+      type, (0: 纯文字, 1: 图片)
+      content,
+      fromId, (具体发送消息的用户)
 
  
 
@@ -120,6 +131,21 @@
   - argument:  
       userId
   - response: 无
+
+- 获取groupList
+  - url: /friend/getGroupList
+  - method: get
+  - auth: true
+  - argument: 无
+  - response: 无
+
+- 删除自己的群聊（即退群）
+  - url: /friend/deleteGroup
+  - method: post
+  - auth: true
+  - argument:  
+      groupId
+  - response: 无
   
 
 ## chat模块
@@ -203,6 +229,7 @@
   - auth: true
   - argument:  
       chatID,
+      chatType
   - response: 无
 
 - 新建群聊
@@ -217,11 +244,27 @@
           ...
         }
       ], 
-  - response: 无
+  - response: 
+    {
+      groupItem: {}
+    }
+
+- 发送群聊消息
+  - url: /chat/groupMessage
+  - method: post
+  - auth: true
+  - argument:  
+      groupId,
+      content,
+      type, (0: 纯文字, 1: 图片)
+  - response: 
+    {
+      isSuccess, (0: 已被群组踢出发送失败， 1: 发送成功)
+    }
 
 - 拉取离线消息，并将离线消息清零
   - url: /chat/getOfflineMessage
-  - method: post
+  - method: get
   - auth: true
   - argument: 无
   - response: 同getChatList
