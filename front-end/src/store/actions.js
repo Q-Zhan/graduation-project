@@ -154,6 +154,21 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  kickGroup({ commit, state}, { groupId, userId}) {
+    return fetch(API + `friend/kickGroup`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `groupId=${groupId}&userId=${userId}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
   getGroupList({ commit, state}, { }) {
     return fetch(API + `friend/getGroupList`, {
       method: 'get',
@@ -282,6 +297,39 @@ export default {
       headers: {
         authorization: state.user.token
       }
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+
+
+  /*
+    moment模块
+  */
+  createMoment({ commit, state}, { text, imgList }) {
+    return fetch(API + `moment/create`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text, imgList })
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
+  getMomentList({ commit, state}, {  }) {
+    return fetch(API + `moment/getMomentList`, {
+      method: 'get',
+      headers: {
+        authorization: state.user.token,
+      },
     })
     .then(res => res.json())
     .catch(err => {

@@ -149,6 +149,35 @@ async function deleteGroup(req, res) {
   }
 }
 
+async function kickGroup(req, res) {
+  const uid = req.uid;
+  const { groupId, userId } = req.body;
+  const map = socket.getUserToSocketMap()
+  try {
+    let deleteSql = `delete from user_group where userID='${userId}' and groupID=${groupId};`;
+    const deleteResult = await query(deleteSql);
+    // 通知其他成员，包括管理员
+    const selectSql = `select * from user_group where groupID=${groupId}`;
+    const selectResult = await query(selectSql);
+    for (let i = 0; i < selectResult.length; i++) {
+      let item = selectResult[i];
+      const userIdSocket = map[item.userID];
+      if (userIdSocket) {
+        userIdSocket.emit('kickMember', groupId, userId)
+      }
+    }
+
+    res.json({
+      code: CODE.success
+    });
+  } catch(error) {
+    res.json({
+      code: CODE.error,
+      error
+    });
+  }
+}
+
 async function getGroupList(req, res) {
   const uid = req.uid;
   try {
@@ -195,5 +224,6 @@ module.exports = {
     handleApply,
     deleteFriend,
     getGroupList,
-    deleteGroup
+    deleteGroup,
+    kickGroup
 }

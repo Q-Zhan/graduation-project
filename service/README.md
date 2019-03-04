@@ -37,6 +37,12 @@
       content,
       fromId, (具体发送消息的用户)
 
+- 收到群成员被踢出
+  - type: kickMember
+  - argument:
+      groupId,
+      userId, (被踢出的用户)
+
  
 
 ## user模块
@@ -145,6 +151,15 @@
   - auth: true
   - argument:  
       groupId
+  - response: 无
+
+- 删除他人的群聊（即管理员踢人）
+  - url: /friend/kickGroup
+  - method: post
+  - auth: true
+  - argument:  
+      groupId,
+      userId
   - response: 无
   
 
@@ -268,6 +283,39 @@
   - auth: true
   - argument: 无
   - response: 同getChatList
+
+## moment模块
+- 创建moment
+  - url: /moment/create
+  - method: post
+  - auth: true
+  - argument: 
+      {
+        text, (文案)
+        imgList, (图片数组，可能为空)
+      } 
+  - response: 无
+
+- 获取momentList
+  - url: /moment/getMomentList
+  - method: get
+  - auth: true
+  - argument: 无
+  - response: 
+    {
+      momentList: [
+        {
+          // "userID": "123",
+          // "name": "I am Z!", 
+          // "area": "广州", 
+          // "sign": "我就是我，有个性",
+          // "gender": 0, 
+          // "avatar": "http://localhost:8081/img/avatar.jpg",
+          // "momentText": '..',
+          // "momentImgList": [],
+        }
+      ]
+    }
 
 
 

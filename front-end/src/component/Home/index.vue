@@ -8,7 +8,6 @@
         <router-view name="detail"></router-view>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -28,7 +27,8 @@ export default {
   },
   data () {
     return {
-      a: '123'
+      a: '123',
+      
     }
   },
   computed: {
@@ -66,6 +66,7 @@ export default {
     this.initSocketEvent(socket);
     this.getFriendList();
     this.getGroupList();
+    
   },
   methods: {
     getGroupList() {
@@ -252,6 +253,10 @@ export default {
         }
       })
 
+      // 收到群成员被踢出的消息
+      socket.on('kickMember', (groupId, userId) => {
+        this.$store.commit('deleteMember', { groupId, userId})
+      })
 
       // 静默删除好友(被他人删好友)
       // socket.on('deleteFriend', (userId) => {

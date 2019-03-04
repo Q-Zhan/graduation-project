@@ -80,7 +80,9 @@ async function getChatList(req, res) {
     const selectChatListResult = await query(selectChatListSql);
     let chatTypeArr = [];
     let selectPromise = [];
-    selectChatListResult.forEach((item, index) => {
+    
+    for (let i = 0; i < selectChatListResult.length; i++) {
+      let item = selectChatListResult[i];
       if (item.chatType == CHAT_TYPE.USER) {
         let userID = item.chatID;
         chatTypeArr.push(CHAT_TYPE.USER)
@@ -90,10 +92,18 @@ async function getChatList(req, res) {
         // 群组
         let groupId = item.chatID;
         chatTypeArr.push(CHAT_TYPE.GROUP);
+        // 检查是否请求用户是否还在群中
+        let selectUserGroup = `select * from user_group where userID='${uid}' and groupID='${groupId}'`;
+        const selectUserGroupResult = await query(selectUserGroup);
+        if (selectUserGroupResult.length <= 0) {
+          // 不在群中，返回空的chatMsg
+          groupId = -1;
+        }
         let sql = `select * from group_message where groupID=${groupId}`;
         selectPromise.push(query(sql))
       }
-    })
+    }
+
     Promise.all(selectPromise)
     .then(async (data) => {
       let result = [];
@@ -158,7 +168,15 @@ async function addChat(req, res) {
     if (chatType == CHAT_TYPE.USER) {
       selectSql = `select * from private_message where (fromID='${uid}' and toID='${chatID}') or (fromID='${chatID}' and toID='${uid}')`;
     } else {
-      selectSql = `select * from group_message where groupID=${chatID}`;
+      let groupId = chatID;
+      // 检查是否请求用户是否还在群中
+      let selectUserGroup = `select * from user_group where userID='${uid}' and groupID='${groupId}'`;
+      const selectUserGroupResult = await query(selectUserGroup);
+      if (selectUserGroupResult.length <= 0) {
+        // 不在群中，返回空的chatMsg
+        groupId = -1;
+      }
+      selectSql = `select * from group_message where groupID=${groupId}`;
     }
     
     const selectResult = await query(selectSql)

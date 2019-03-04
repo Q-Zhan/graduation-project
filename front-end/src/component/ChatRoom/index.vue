@@ -53,7 +53,13 @@
     </div>
     <!-- memberList弹窗 -->
     <div class="member_pop" :style="memberPopStyle" v-if="isMemberPopShow">
-
+      <div class="avatar"><img :src="memberPopItem.avatar || defaultAvatar"/></div>
+      <div class="info">
+        <div class="name">{{memberPopItem.name}}</div>
+        <div class="id">ID：{{ memberPopItem.userID}}</div>
+        <div class="area">地区：{{ memberPopItem.area}}</div>
+        <div class="kick" @click="kickMember(memberPopItem)" v-if="isGroupManager"><img :src="kickIcon"/></div>
+      </div>
     </div>
   </div>
 </template>
@@ -65,6 +71,7 @@ export default {
   data () {
     return {
       defaultAvatar: require('../../assets/defaultAvatar.png'),
+      kickIcon: require('../../assets/kick.png'),
       MESSAGE_TYPE: MESSAGE_TYPE,
       isMemberListShow: false,
       isMemberPopShow: false,
@@ -72,6 +79,7 @@ export default {
         top: '0px',
         left: '0px'
       },
+      memberPopItem: {}
     }
   },
   computed: {
@@ -102,6 +110,13 @@ export default {
     },
     member() {
       return this.isGroup && this.chat.member;
+    },
+    isGroupManager() {
+      if (!this.isGroup) {
+        return false;
+      } else {
+        return this.userInfo.userID == this.member[0].userID; // member第一个是管理员
+      }
     }
     // queryIndex() {
     //   return this.$route.query.index;
@@ -120,6 +135,23 @@ export default {
     this.initMemberPopCancel();
   },
   methods: {
+    kickMember(item) {
+      const { userID } = item;
+      this.$store.dispatch('kickGroup', { userId: userID, groupId: this.chat.groupId})
+      .then(data => {
+        switch(data.code) {
+          case RESPONCE_CODE.unAuth:
+            this.$message.error('登录状态失效');
+            this.$router.push('/login');
+            break;
+          case RESPONCE_CODE.success:
+            this.$message.success('成功移出群聊')
+            break;
+          default:
+            this.$message.error('服务出错，请稍后重试');
+        }
+      })
+    },
     showMemberPop(item, e) {
       let x = e.clientX;
       let y = e.clientY;
@@ -127,6 +159,7 @@ export default {
         top: `${y}px`,
         left: `${x}px`
       }
+      this.memberPopItem = item;
       this.isMemberPopShow = true;
       e.stopPropagation();
     },
@@ -339,7 +372,7 @@ export default {
           name = element.name;
         }
       });
-      return name;
+      return name || '已被踢出群聊';
     }
   }
 }
@@ -356,8 +389,42 @@ export default {
     z-index: 199;
     border-radius: 4px;
     width: 220px;
-    height: 300px;
-    background-color: red;
+    overflow: hidden;
+    .avatar {
+      width: 220px;
+      height: 220px;
+    }
+    .info {
+      width: 200px;
+      height: 90px;
+      padding-left: 20px;
+      padding-top: 20px;
+      background-color: white;
+      position: relative;
+      .name {
+        font-weight: 400;
+        font-size: 18px;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: normal;
+        margin-bottom: 8px;
+      }
+      .id, .area {
+        font-size: 12px;
+        color: #888;
+      }
+      .kick {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 64px;
+        right: 20px;
+        cursor: pointer;
+      }
+    }
+
   }
   .title {
     display: flex;
@@ -407,6 +474,7 @@ export default {
         img {
           width: 55px;
           height: 55px;
+          cursor: pointer;
         }
         .member_name {
           width: 55px;

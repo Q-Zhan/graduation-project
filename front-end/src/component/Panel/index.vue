@@ -11,6 +11,7 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="pushRouter('/home/addFriend')">添加好友</el-dropdown-item>
             <el-dropdown-item divided @click.native="createGroup">发起群聊</el-dropdown-item>
+            <el-dropdown-item divided @click.native="createMoment">发布动态</el-dropdown-item>
             <el-dropdown-item divided>退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -74,6 +75,10 @@ export default {
 
   },
   methods: {
+    createMoment() {
+      this.$store.commit('showCreateMoment', {})
+      this.pushRouter('/home/moment')
+    },
     pushRouter(path) {
       this.$router.push(path);
     },

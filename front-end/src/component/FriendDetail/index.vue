@@ -107,7 +107,6 @@ export default {
             const idx = this.chatList.findIndex(item => {
               return item.groupId == groupId;
             });
-            console.log(idx)
             if (idx != -1) {
               // 保持chatListIndex
               if (idx == this.chatListIndex) {

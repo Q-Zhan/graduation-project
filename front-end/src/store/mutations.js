@@ -49,6 +49,36 @@ export default {
     // 删除好友
     state.friend.groupList.splice(index, 1);
   },
+  deleteMember(state, { groupId, userId }) {
+    const chatList = state.chat.chatList;
+    const groupList = state.friend.groupList;
+    // 删除chatList中的指定member
+    const chatIndex = chatList.findIndex(element => {
+      return element.groupId == groupId;
+    });
+    if (chatIndex != -1) {
+      const chatMember = chatList[chatIndex].member;
+      const memberIndex = chatMember.findIndex(element => {
+        return element.userID == userId;
+      })
+      if (memberIndex != -1) {
+        state.chat.chatList[chatIndex].member.splice(memberIndex, 1);
+      }
+    }
+    // 删除groupList中的指定member
+    const groupIndex = groupList.findIndex(element => {
+      return element.groupId == groupId;
+    });
+    if (groupIndex != -1) {
+      const groupMember = groupList[groupIndex].member;
+      const memberIndex = groupMember.findIndex(element => {
+        return element.userID == userId;
+      })
+      if (memberIndex != -1) {
+        state.friend.groupList[groupIndex].member.splice(memberIndex, 1);
+      }
+    }
+  },
 
   // chat
   setChatList(state, { chatList }) {
@@ -85,6 +115,27 @@ export default {
   },
   setScrollHeight(state, { value, index }) {
     state.chat.chatList[index].scrollHeight = value;
+  },
+
+  // moment
+  showCreateMoment(state, { }) {
+    state.moment.isDetailShow = false;
+    state.moment.isCreateShow = true;
+  },
+  showMomentDetail(state, {}) {
+    state.moment.isDetailShow = true;
+    state.moment.isCreateShow = false;
+  },
+  addMoment(state, { item }) {
+    console.log(state.moment.momentList)
+    state.moment.momentList.unshift(item)
+    console.log(state.moment.momentList)
+  },
+  setMomentList(state, { momentList}) {
+    state.moment.momentList = momentList;
+  },
+  updateMomentIndex(state, { index }) {
+    state.moment.momentIndex = index;
   }
 
 }
