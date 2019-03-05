@@ -23,7 +23,7 @@
           <div class="content">{{ moment.momentText }}</div>
           <div class="img_list" v-if="moment.momentImgList.length > 0">
             <div v-for="(picture, picIndex) in moment.momentImgList" :key="picIndex">
-              <img :src="decodeURIComponent(picture)" v-if="picture" />
+              <img :src="decodeURIComponent(picture)" v-if="picture" @click="openMask(picture)"/>
             </div>
           </div>
         </div>
@@ -34,6 +34,13 @@
         <div class="text">未选择动态</div>
       </div>
     </section>
+    <!-- 详情图片浮层 -->
+    <div class="mask_wrap" v-if="isMaskShow" @click="closeMask">
+      <div class="mask_content">
+        <img :src="maskImg"/>
+      </div>
+      <!-- <div class="close_button"></div> -->
+    </div>
   </div>
 </template>
 
@@ -47,7 +54,8 @@ export default {
       uploadIcon: require('../../assets/upload.jpg'),
       defaultAvatar: require('../../assets/defaultAvatar.png'),
       imgList: [false, false, false], // 
-      
+      isMaskShow: false,
+      maskImg: ''
     }
   },
   computed: {
@@ -74,6 +82,13 @@ export default {
     
   },
   methods: {
+    closeMask() {
+      this.isMaskShow = false;
+    },
+    openMask(item) {
+      this.maskImg = decodeURIComponent(item);
+      this.isMaskShow = true;
+    },
     createMoment() {
       this.$store.dispatch('createMoment', { text: this.momentText, imgList: this.imgList})
       .then(data => {
@@ -152,6 +167,33 @@ export default {
   width: 100%;
   height: 100%;
   background: #eee;
+  .mask_wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .mask_content {
+      width: 300px;
+      height: 300px;
+      background: white;
+    }
+    .close_button {
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: url('../../assets/close.png') no-repeat;
+      background-size: 34px 34px;
+    }
+  }
   .title {
     margin: 0 19px;
     padding: 10px 0;

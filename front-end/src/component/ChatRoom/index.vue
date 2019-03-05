@@ -303,7 +303,11 @@ export default {
               break;
             case RESPONCE_CODE.success:
               const isSuccess = data.isSuccess;
-              if (isSuccess) {
+              if (isSuccess == 1 || isSuccess == 2) {
+                if (isSuccess == 2) {
+                  message = data.message;
+                  this.$message.error('您发送的信息中含有敏感词，多次发现将被处罚')
+                }
                 this.$store.commit('addChatMessage', {
                   index: parseInt(this.chatListIndex),
                   item: { 
@@ -317,7 +321,7 @@ export default {
                 this.$store.dispatch('topChat', { chatID: this.chat.groupId});
                 this.$store.commit('topChat', { index: parseInt(this.chatListIndex) });
                 this.$store.commit('updateChatListIndex', { index: 0 })
-              } else {
+              } else if (isSuccess == 0){
                 this.$message.error('您已被踢出该群聊');
               }
               this.$refs.inputBox.value = '';

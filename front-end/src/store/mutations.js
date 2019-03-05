@@ -8,6 +8,9 @@ export default {
   setUserInfo(state, { info }) {
     state.user.info = info;
   },
+  modifyInfo(state, { name, area, sign, gender, avatar }) {
+    state.user.info = Object.assign(state.user.info, { name, area, sign, gender, avatar })
+  },
 
   // socket
   setSocket(state, { socket }) {
@@ -127,9 +130,9 @@ export default {
     state.moment.isCreateShow = false;
   },
   addMoment(state, { item }) {
-    console.log(state.moment.momentList)
-    state.moment.momentList.unshift(item)
-    console.log(state.moment.momentList)
+    const arr = state.moment.momentList.slice(0);
+    arr.unshift(item);
+    state.moment.momentList = arr;
   },
   setMomentList(state, { momentList}) {
     state.moment.momentList = momentList;

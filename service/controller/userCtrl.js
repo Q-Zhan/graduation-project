@@ -114,9 +114,40 @@ async function login(req, res) {
   }
 }
 
+async function modifyInfo(req, res) {
+  const uid = req.uid;
+  let { name, area, sign, gender, avatar } = req.body;
+  
+  try {
+
+    if (gender == 0 || gender == 1) {
+      gender = parseInt(gender);
+    } else {
+      gender = null;
+    }
+    let sql = `update social_info set name='${name}', area='${area}', sign='${sign}', gender=${gender}, avatar='${avatar}' where userID='${uid}'`;
+    const result = await query(sql);
+    if (result && result.affectedRows == 1) {
+      res.json({
+        code: CODE.success
+      });
+    } else {
+      res.json({
+        code: CODE.error
+      });
+    }
+  } catch(error) {
+    res.json({
+      code: CODE.error,
+      error
+    });
+  }
+}
+
 module.exports = {
   register,
   verifyMail,
   modifyPassword,
-  login
+  login,
+  modifyInfo
 }

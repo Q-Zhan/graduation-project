@@ -67,6 +67,7 @@ export default {
 #momentList {
   overflow-x: hidden;
   overflow-y: auto;
+  width: 110% !important;
   .title {
     font-size: 14px;
     background-color: #292d32;

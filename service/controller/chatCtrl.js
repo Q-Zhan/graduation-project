@@ -3,6 +3,9 @@ const query = require('./db');
 const CODE = require('../constant/responseCode');
 const GLOBAL_CONSTANT = require('../constant/global');
 const socket = require('../util/socket');
+const readCensorWord = require('../util/readCensorWord')
+const fs = require('fs')
+const path = require('path')
 
 const REPEAT_ERROR = 'ER_DUP_ENTRY';
 const { CHAT_TYPE, PRIVATE_MESSAGE_SUCCESS_TYPE, MESSAGE_TYPE} = GLOBAL_CONSTANT;
@@ -351,72 +354,103 @@ async function sendGroupMessage(req, res) {
   let { groupId, content, type } = req.body;
   const uid = req.uid;
   const map = socket.getUserToSocketMap();
-  
-  try {
-    // 检查是否还在群中
-    let selectUserGroup = `select * from user_group where userID='${uid}' and groupID=${groupId}`;
-    let selectUserGroupResult = await query(selectUserGroup);
-    if (selectUserGroupResult.length > 0) {
-      // 在群中
-      let insertGroupMessage = `insert into group_message values(${null}, '${groupId}', '${uid}', '${content}', ${+new Date()}, ${type})`;
-      const insertGroupMessageResult = await query(insertGroupMessage);
-      // 获取群成员
-      let getMemberSql = `select * from user_group where groupID=${groupId}`;
-      const memberIds = await query(getMemberSql);
-      for (let i = 0; i < memberIds.length; i++) {
-        const element = memberIds[i];
-        const memberId = element.userID; 
-        // 不通知自己
-        if (memberId == uid) {
-          continue;
+  readCensorWord().then(async (censorWordData) => {
+    try {
+      // 检查是否还在群中
+      let selectUserGroup = `select * from user_group where userID='${uid}' and groupID=${groupId}`;
+      let selectUserGroupResult = await query(selectUserGroup);
+      if (selectUserGroupResult.length > 0) {
+        // 在群中
+        // 判断是否含有敏感词
+        let isLegal = true;
+        let censorWords = [];
+        if (type == MESSAGE_TYPE.TEXT) {
+          censorWordData.forEach(word => {
+            if (content.indexOf(word) != -1) {
+              censorWords.push(word)
+              isLegal = false;
+            }
+          })
         }
-        const userIdSocket = map[memberId];
-        if (userIdSocket) {
-          // 成员在线
-          userIdSocket.emit('groupMessage', groupId, type, content, uid);
+        if (!isLegal) {
+          censorWords.forEach(element => {
+            let replaceStr = '';
+            for (let i = 0; i < element.length; i++) {
+              replaceStr += '*';
+            }
+            content = content.replace(element, replaceStr)
+          });
+        }
+        // 插入groupMessage
+        let insertGroupMessage = `insert into group_message values(${null}, '${groupId}', '${uid}', '${content}', ${+new Date()}, ${type})`;
+        const insertGroupMessageResult = await query(insertGroupMessage);
+        // 获取群成员
+        let getMemberSql = `select * from user_group where groupID=${groupId}`;
+        const memberIds = await query(getMemberSql);
+        for (let i = 0; i < memberIds.length; i++) {
+          const element = memberIds[i];
+          const memberId = element.userID; 
+          // 不通知自己
+          if (memberId == uid) {
+            continue;
+          }
+          const userIdSocket = map[memberId];
+          if (userIdSocket) {
+            // 成员在线
+            userIdSocket.emit('groupMessage', groupId, type, content, uid);
+          } else {
+            // 成员离线
+            // 更新offline_message
+            let selectOfflineSql = `select * from offline_message where toId='${memberId}' and fromId='${groupId}' and chatType=${CHAT_TYPE.GROUP}`;
+            const selectOfflineResult = await query(selectOfflineSql);
+            if (selectOfflineResult.length > 0) {
+              // 更新
+              let num = selectOfflineResult[0].messageNum;
+              let updateOfflinesSql = `update offline_message set timeStamp=${+new Date()}, lastMessage='${content}', type=${type}, messageNum=${num+1}, senderId='${uid}' where toId='${memberId}' and fromId='${groupId}' and chatType=${CHAT_TYPE.GROUP}`;
+              const updateOfflineResult = await query(updateOfflinesSql);
+            } else {
+              // 插入
+              let insertOfflineSql = `insert into offline_message values('${groupId}', '${memberId}', ${+new Date()}, '${content}', ${type}, ${1}, '${uid}', ${CHAT_TYPE.GROUP})`;
+              const insertOfflineResult = await query(insertOfflineSql);
+            }
+            // 更新对方的chatList
+            let selectChatlistSql = `select * from chatlist where userID='${memberId}' and chatID='${groupId}'`;
+            const selectChatlistResult = await query(selectChatlistSql);
+            if (selectChatlistResult.length > 0) {
+              let updateChatlistSql = `update chatlist set timeStamp=${+new Date()} where userID='${memberId}' and chatID='${groupId}'`;
+              const updateChatlistResult = await query(updateChatlistSql);
+            } else {
+              let insertChatlistSql = `insert into chatlist values('${memberId}', '${groupId}', ${CHAT_TYPE.GROUP}, ${+new Date()})`;
+              const insertChatlistResult = await query(insertChatlistSql);
+            }
+          }
+        }
+        if (isLegal) {
+          res.json({
+            code: CODE.success,
+            isSuccess: PRIVATE_MESSAGE_SUCCESS_TYPE.SUCCESS
+          });
         } else {
-          // 成员离线
-          // 更新offline_message
-          let selectOfflineSql = `select * from offline_message where toId='${memberId}' and fromId='${groupId}' and chatType=${CHAT_TYPE.GROUP}`;
-          const selectOfflineResult = await query(selectOfflineSql);
-          if (selectOfflineResult.length > 0) {
-            // 更新
-            let num = selectOfflineResult[0].messageNum;
-            let updateOfflinesSql = `update offline_message set timeStamp=${+new Date()}, lastMessage='${content}', type=${type}, messageNum=${num+1}, senderId='${uid}' where toId='${memberId}' and fromId='${groupId}' and chatType=${CHAT_TYPE.GROUP}`;
-            const updateOfflineResult = await query(updateOfflinesSql);
-          } else {
-            // 插入
-            let insertOfflineSql = `insert into offline_message values('${groupId}', '${memberId}', ${+new Date()}, '${content}', ${type}, ${1}, '${uid}', ${CHAT_TYPE.GROUP})`;
-            const insertOfflineResult = await query(insertOfflineSql);
-          }
-          // 更新对方的chatList
-          let selectChatlistSql = `select * from chatlist where userID='${memberId}' and chatID='${groupId}'`;
-          const selectChatlistResult = await query(selectChatlistSql);
-          if (selectChatlistResult.length > 0) {
-            let updateChatlistSql = `update chatlist set timeStamp=${+new Date()} where userID='${memberId}' and chatID='${groupId}'`;
-            const updateChatlistResult = await query(updateChatlistSql);
-          } else {
-            let insertChatlistSql = `insert into chatlist values('${memberId}', '${groupId}', ${CHAT_TYPE.GROUP}, ${+new Date()})`;
-            const insertChatlistResult = await query(insertChatlistSql);
-          }
+          res.json({
+            code: CODE.success,
+            isSuccess: PRIVATE_MESSAGE_SUCCESS_TYPE.ILLEGAL,
+            message: content
+          })
         }
+        
+      } else {
+        res.json({
+          code: CODE.success,
+          isSuccess: PRIVATE_MESSAGE_SUCCESS_TYPE.FAIL
+        })
       }
+    } catch(error) {
       res.json({
-        code: CODE.success,
-        isSuccess: PRIVATE_MESSAGE_SUCCESS_TYPE.SUCCESS
+        code: CODE.error,
+        error
       });
-    } else {
-      res.json({
-        code: CODE.success,
-        isSuccess: PRIVATE_MESSAGE_SUCCESS_TYPE.FAIL
-      })
     }
-  } catch(error) {
-    res.json({
-      code: CODE.error,
-      error
-    });
-  }
+  })
 }
 
 

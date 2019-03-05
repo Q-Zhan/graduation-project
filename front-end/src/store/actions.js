@@ -63,6 +63,21 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  modifyInfo({ commit, state}, { name, area, sign, gender, avatar }) {
+    return fetch(API + `user/modifyInfo`, {
+      method: 'post',
+      headers: {
+        authorization: state.user.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `name=${name}&area=${area}&sign=${sign}&gender=${gender}&avatar=${avatar}`
+    })
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err)
+      return {code: RESPONCE_CODE.error};
+    })
+  },
 
 
   /*
@@ -337,4 +352,5 @@ export default {
       return {code: RESPONCE_CODE.error};
     })
   },
+  
 }

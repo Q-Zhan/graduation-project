@@ -30,16 +30,16 @@ export default {
     isDetailShow: true, // 展示moment详情
     isCreateShow: false, // 展示新建momment
     momentList: [
-      {
-        // "userID": "123",
-        // "name": "I am Z!", 
-        // "area": "广州", 
-        // "sign": "我就是我，有个性",
-        // "gender": 0, 
-        // "avatar": "http://localhost:8081/img/avatar.jpg",
-        // "momentText": '..',
-        // "momentImgList": [],
-      }
+      // {
+      //   // "userID": "123",
+      //   // "name": "I am Z!", 
+      //   // "area": "广州", 
+      //   // "sign": "我就是我，有个性",
+      //   // "gender": 0, 
+      //   // "avatar": "http://localhost:8081/img/avatar.jpg",
+      //   // "momentText": '..',
+      //   // "momentImgList": [],
+      // }
     ],
     momentIndex: null
   },

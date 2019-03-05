@@ -83,6 +83,18 @@
       applyFriend: [], (未处理的好友请求列表)
     }
 
+- 修改个人信息
+  - url: /user/modifyInfo
+  - method: post
+  - auth: true
+  - argument:  
+      name,
+      area,
+      sign,
+      gender,
+      avatar
+  - response: 无
+
 ## friend模块
 - 搜索用户(模糊搜索)
   - url: /friend/searchUser
@@ -274,7 +286,8 @@
       type, (0: 纯文字, 1: 图片)
   - response: 
     {
-      isSuccess, (0: 已被群组踢出发送失败， 1: 发送成功)
+      isSuccess, (0: 已被群组踢出发送失败， 1: 发送成功, 2: 含有敏感词)
+      message, (仅当含有敏感词时，值为过滤后的信息)
     }
 
 - 拉取离线消息，并将离线消息清零
