@@ -134,8 +134,8 @@ export default {
           let ctx = cvs.getContext('2d')
           let img = new Image()
           img.onload = () => {
-            // 如果图片大小大于50kb
-            const MAX_SIZE = 50
+            // 如果图片大小大于10kb
+            const MAX_SIZE = 10
             if (img_size >= MAX_SIZE) {
               let compress_proportion = MAX_SIZE / img_size
               cvs.width = img.width
