@@ -210,7 +210,7 @@ export default {
         return this.defaultGroupAvatar;
       } else {
         // 用户
-        return item.avatar || this.defaultAvatar;
+        return (item.avatar && decodeURIComponent(item.avatar)) || this.defaultAvatar;
       }
     }
   }

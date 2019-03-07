@@ -3,7 +3,7 @@
     <div class="title">好友动态</div>
     <div class="list">
       <div class="moment" v-for="(item, index) in momentList" :key="index" @click="turnToDetail(index)">
-        <div class="avatar"><img :src="item.avatar || defaultAvatar"/></div>
+        <div class="avatar"><img :src="(item.avatar && decodeURIComponent(item.avatar)) || defaultAvatar"/></div>
         <div class="detail">
           <div class="name">{{ item.name }}</div>
           <div class="content">{{ item.momentText }}</div>

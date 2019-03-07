@@ -6,7 +6,7 @@
     </div>
     <div class="user_list">
       <div class="user" v-for="item in userList" :key="item.userID">
-        <div class="user_avatar"><img :src="item.avatar || defaultAvatar"/></div>
+        <div class="user_avatar"><img :src="(item.avatar && decodeURIComponent(item.avatar)) || defaultAvatar"/></div>
         <div class="user_info">
           <div class="user_name_id">
             <span class="name">{{ item.name }}</span>

@@ -3,7 +3,7 @@
     <div class="title" v-show="applyFriend.length > 0">好友请求</div>
     <div class="apply item" v-for="(item, index) in applyFriend" :key="index">
       <div class="avatar">
-        <img :src="item.avatar || defaultAvatar"/>
+        <img :src="(item.avatar && decodeURIComponent(item.avatar)) || defaultAvatar"/>
       </div>
       <div class="name">{{ item.name }}</div>
       <div class="accept button" @click="handleApply(item, index, ACTION_TYPE.ACCEPT)">接受</div>
@@ -27,7 +27,7 @@
     </div>
     <div class="friend item" v-for="(item, index) in friendList" :key="item.userID" @click="pushRouter(`/home/friend?index=${index}&type=user`)">
       <div class="avatar">
-        <img :src="item.avatar || defaultAvatar"/>
+        <img :src="(item.avatar && decodeURIComponent(item.avatar)) || defaultAvatar"/>
       </div>
       <div class="name">{{ item.name }}</div>
       <div class="select_button" v-if="isSelectingGroup"><input type="checkbox" @change="handleSelectChange(index, $event)"/></div>

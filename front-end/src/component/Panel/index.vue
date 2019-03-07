@@ -154,7 +154,7 @@ export default {
       if (this.avatar) {
         return decodeURIComponent(this.avatar);
       } else {
-        return this.userInfo.avatar || this.defaultAvatar
+        return (this.userInfo.avatar && decodeURIComponent(this.userInfo.avatar)) || this.defaultAvatar
       }
     },
     closeMask() {

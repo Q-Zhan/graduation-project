@@ -8,7 +8,7 @@
         <div class="triangle" v-if="isGroup" @click="controlMemberList"></div>
         <div class="member_list" v-if="isGroup && isMemberListShow">
           <div class="member" v-for="(item, index) in member" :key="index">
-            <img :src="item.avatar || defaultAvatar" @click="showMemberPop(item, $event)"/>
+            <img :src="(item.avatar && decodeURIComponent(item.avatar)) || defaultAvatar" @click="showMemberPop(item, $event)"/>
             <div class="member_name">{{item.name}}</div>
           </div>
         </div>
@@ -53,7 +53,7 @@
     </div>
     <!-- memberList弹窗 -->
     <div class="member_pop" :style="memberPopStyle" v-if="isMemberPopShow">
-      <div class="avatar"><img :src="memberPopItem.avatar || defaultAvatar"/></div>
+      <div class="avatar"><img :src="(memberPopItem.avatar && decodeURIComponent(memberPopItem.avatar)) || defaultAvatar"/></div>
       <div class="info">
         <div class="name">{{memberPopItem.name}}</div>
         <div class="id">ID：{{ memberPopItem.userID}}</div>
@@ -363,7 +363,7 @@ export default {
           }
         });
       }
-      return (avatar || this.defaultAvatar);
+      return (avatar && decodeURIComponent(avatar)) || this.defaultAvatar;
     },
     getSenderName(item) {
       if (this.chat.userID) {

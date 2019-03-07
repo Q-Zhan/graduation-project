@@ -17,7 +17,7 @@
     <!-- 动态详情 -->
     <section v-if="isDetailShow">
       <div class="moment" v-if="momentIndex != null">
-        <div class="avatar"><img :src="moment.avatar || defaultAvatar"/></div>
+        <div class="avatar"><img :src="(moment.avatar && decodeURIComponent(moment.avatar)) || defaultAvatar"/></div>
         <div class="detail">
           <div class="name">{{ moment.name }}</div>
           <div class="content">{{ moment.momentText }}</div>
@@ -37,7 +37,7 @@
     <!-- 详情图片浮层 -->
     <div class="mask_wrap" v-if="isMaskShow" @click="closeMask">
       <div class="mask_content">
-        <img :src="maskImg"/>
+        <img :src="decodeURIComponent(maskImg)"/>
       </div>
       <!-- <div class="close_button"></div> -->
     </div>

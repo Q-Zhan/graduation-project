@@ -2,7 +2,7 @@
   <div id="friendDetail">
     <div class="title">详细信息</div>
     <div class="friend" v-if="queryIndex && queryType=='user'">
-      <div class="avatar"><img :src="friend.avatar || defaultAvatar"/></div>
+      <div class="avatar"><img :src="(friend.avatar && decodeURIComponent(friend.avatar)) || defaultAvatar"/></div>
       <div class="name">
         <div>
           {{ friend.name }}  
